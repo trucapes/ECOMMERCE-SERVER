@@ -1,12 +1,14 @@
-const express = require("express")
-const router = express.Router()
-const cors = require("cors")
-const { initializePayment, verifyPayment } = require("../controllers/paymentController")
+const express = require("express");
+const router = express.Router();
+const {
+  initializePayment,
+  verifyPayment,
+} = require("../controllers/paymentController");
 
 // initialize payment endpoint
-router.post('/', cors(), initializePayment)
+router.post("/", initializePayment);
 
 // verfiy payment endpoint
-router.get('/verify/:id', cors(), verifyPayment)
+router.get("/verify/:id", verifyPayment);
 
-module.exports = router
+module.exports = router;
