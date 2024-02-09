@@ -12,6 +12,17 @@ const createToken = (userId, role) => {
 
 const register = async (req, res) => {
   try {
+    const user = await User.findOne({
+      $or: [{ email: req.body.email }, { mobileNo: req.body.mobileNo }],
+    });
+
+    // Check if user already exists
+    if (user) {
+      return res
+        .status(200)
+        .json({ error: false, message: "User already exists" });
+    }
+
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     const newUser = new User({
