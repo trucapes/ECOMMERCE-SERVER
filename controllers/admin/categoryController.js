@@ -4,7 +4,7 @@ const CategoryController = {
   // Get all categories with pagination, sorting, and searching
   getAllCategories: async (req, res) => {
     try {
-      const { page = 1, limit = 20, sortBy = "createdAt", search } = req.query;
+      const { page = 1, limit = 200, sortBy = "createdAt", search } = req.query;
 
       let filter = {};
       if (search) {
@@ -24,7 +24,7 @@ const CategoryController = {
       const totalPages = Math.ceil(totalCategoriesCount / limit);
 
       res.json({
-        success: true,
+        error: false,
         data: categories,
         page: page,
         limit: limit,
@@ -33,7 +33,7 @@ const CategoryController = {
     } catch (error) {
       console.error("Error fetching categories:", error);
       res.status(500).json({
-        success: false,
+        error: true,
         message: "Internal Server Error",
       });
     }
@@ -43,9 +43,10 @@ const CategoryController = {
   createCategory: async (req, res) => {
     try {
       const { name, index } = req.body;
-      const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
+      
 
       console.log(req.file);
+      const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
 
       const newCategory = new Category({
         name,
@@ -53,14 +54,15 @@ const CategoryController = {
         image,
       });
 
+
       await newCategory.save();
 
-      res.json({ success: true, message: "Category created successfully" });
+      res.json({ error: false, message: "Category created successfully" });
     } catch (error) {
       console.error("Error creating category:", error);
       res
         .status(500)
-        .json({ success: false, message: "Internal Server Error" });
+        .json({ error: true, message: "Internal Server Error" });
     }
   },
 
@@ -75,9 +77,10 @@ const CategoryController = {
       if (!category) {
         return res
           .status(404)
-          .json({ success: false, message: "Category not found" });
+          .json({ error: true, message: "Category not found" });
       }
 
+      if(req.file) category.image = req.file.path;
       // Update category fields
       if (name) category.name = name;
       if (index) category.index = parseInt(index);
@@ -85,12 +88,12 @@ const CategoryController = {
       // Update the category
       await category.save();
 
-      res.json({ success: true, message: "Category updated successfully" });
+      res.json({ error: false, message: "Category updated successfully" });
     } catch (error) {
       console.error("Error editing category:", error);
       res
         .status(500)
-        .json({ success: false, message: "Internal Server Error" });
+        .json({ error: true, message: "Internal Server Error" });
     }
   },
 
@@ -102,12 +105,12 @@ const CategoryController = {
       // Find and delete the category
       await Category.findByIdAndDelete(categoryId);
 
-      res.json({ success: true, message: "Category deleted successfully" });
+      res.json({ error: false, message: "Category deleted successfully" });
     } catch (error) {
       console.error("Error deleting category:", error);
       res
         .status(500)
-        .json({ success: false, message: "Internal Server Error" });
+        .json({ error: true, message: "Internal Server Error" });
     }
   },
 };

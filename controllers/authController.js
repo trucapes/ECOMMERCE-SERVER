@@ -16,6 +16,8 @@ const register = async (req, res) => {
       $or: [{ email: req.body.email }, { mobileNo: req.body.mobileNo }],
     });
 
+  
+
     // Check if user already exists
     if (user) {
       return res

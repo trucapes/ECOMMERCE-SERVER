@@ -23,5 +23,6 @@ router.use(isAdmin);
 // Import routes for authentication, profile, and user management
 router.use("/users", userRoutes);
 router.use("/category", require("./categoryRoutes"));
+router.use("/products", require("./productRoute"));
 
 module.exports = router;

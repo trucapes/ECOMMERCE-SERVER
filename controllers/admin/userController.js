@@ -15,7 +15,6 @@ const UserController = {
         search,
       } = req.query;
 
-      console.log("Search Query:", search); // Add this line to check the value of the search parameter
 
       let filter = {};
       if (isPending !== undefined) {
