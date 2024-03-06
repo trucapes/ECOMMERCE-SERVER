@@ -3,12 +3,33 @@ const User = require("../models/userModel");
 // Get user profile
 const getProfile = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id).populate("wallet");
+
+    if (!user) {
+      return res.status(404).json({ error: true, message: "User not found" });
+    }
+
+    //Perhaps the user Object is frozen, so we need to clone it and the send only wallet balance to frontend
+    let clonedUser = { ...user };
+    clonedUser = { ...clonedUser._doc };
+    clonedUser.walletBalance = user.wallet.balance;
+    delete clonedUser.wallet;
+
+    console.log("\n", clonedUser);
+
+    res.json({ error: false, data: clonedUser });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ error: true, message: "Internal Server Error" });
+  }
+
+  /* try {
     const user = await User.findById(req.user._id);
     res.json({ error: false, data: user });
   } catch (error) {
     console.error("Error fetching user profile:", error);
     res.status(500).json({ error: true, message: "Internal Server Error" });
-  }
+  } */
 };
 
 // Edit user profile
