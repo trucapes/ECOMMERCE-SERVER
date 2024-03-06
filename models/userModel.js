@@ -60,6 +60,11 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    wallet: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Wallet",
+      default: null,
+    },
   },
   {
     timestamps: true,

@@ -15,7 +15,6 @@ const UserController = {
         search,
       } = req.query;
 
-
       let filter = {};
       if (isPending !== undefined) {
         filter.isPending = isPending;
@@ -39,6 +38,7 @@ const UserController = {
       sortOptions[sortBy] = -1;
 
       const users = await User.find(filter)
+        .populate("wallet")
         .skip(skip)
         .limit(parseInt(limit))
         .sort(sortOptions);
@@ -65,11 +65,11 @@ const UserController = {
     try {
       const user = await User.findOne({
         $or: [{ _id: identifier }, { email: identifier }],
-      });
+      }).populate("wallet");
       if (!user) {
         return res.status(404).json({ error: true, message: "User not found" });
       }
-      res.json({ error: false, data: user });
+      res.json({ error: false, data: user.pop });
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
@@ -85,7 +85,7 @@ const UserController = {
           { firstName: { $regex: query, $options: "i" } },
           { email: { $regex: query, $options: "i" } },
         ],
-      });
+      }).populate("wallet");
       res.json({ error: false, data: users });
     } catch (error) {
       console.error("Error searching users:", error);

@@ -3,6 +3,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
+const Wallet = require("../models/walletModel");
 
 const JWT_SECRET = "ashdliashkldjnaslkcjlNcilHcoqla8weduoqwscbkjzbxkjbzdhw3hdi";
 
@@ -15,8 +16,6 @@ const register = async (req, res) => {
     const user = await User.findOne({
       $or: [{ email: req.body.email }, { mobileNo: req.body.mobileNo }],
     });
-
-  
 
     // Check if user already exists
     if (user) {
@@ -40,7 +39,14 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
+    const wallet = new Wallet({
+      userId: newUser._id,
+    });
+
+    newUser.wallet = wallet;
+
     await newUser.save();
+    await wallet.save();
 
     res
       .status(201)
