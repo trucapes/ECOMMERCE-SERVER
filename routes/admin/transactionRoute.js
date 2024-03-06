@@ -3,4 +3,6 @@ const processTransaction = require("../../controllers/admin/transactionControlle
 
 const router = express.Router();
 
-router.post("/transaction", processTransaction);
+router.post("", processTransaction);
+
+module.exports = router;

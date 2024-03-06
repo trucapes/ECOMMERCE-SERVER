@@ -1,5 +1,3 @@
-// adminRoutes.js
-
 const express = require("express");
 const router = express.Router();
 const userRoutes = require("./userRoutes");
@@ -24,6 +22,5 @@ router.use(isAdmin);
 router.use("/users", userRoutes);
 router.use("/category", require("./categoryRoutes"));
 router.use("/products", require("./productRoute"));
-router.
 
 module.exports = router;

@@ -2,9 +2,7 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(
-      "mongodb+srv://truscapeslighting:tuscikde@cluster0.a0kvj.mongodb.net/"
-    );
+    const conn = await mongoose.connect("mongodb://localhost:27017");
     console.log("Mongo DB Connected: ", conn.connection.host);
   } catch (err) {
     console.log(err);
@@ -13,3 +11,4 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
+//"mongodb+srv://truscapeslighting:tuscikde@cluster0.a0kvj.mongodb.net/"

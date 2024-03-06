@@ -7,6 +7,7 @@ async function processTransaction(req, res) {
   let description;
   // Check if user is admin
 
+  
   if (from.userRole !== "admin") {
     return res.status(400).json({ error: true, message: "Unauthorized" });
   }
@@ -14,7 +15,7 @@ async function processTransaction(req, res) {
   // Check if user exists and populate wallet
 
   const user = await userModel.findById(to).populate("wallet");
-
+  console.log(user.wallet);
   if (!user) {
     return res.status(400).json({ error: true, message: "User not found" });
   }
@@ -38,14 +39,18 @@ async function processTransaction(req, res) {
     user: to,
     amount: amount,
     description: description,
-    balanceRemaining: parseFloat(wallet.balance) + parseFloat(amount),
+    balanceRemaining: parseFloat(user.wallet.balance) + parseFloat(amount),
   });
   await newTransaction.save();
 
   // Update wallet balance
 
+  await walletModel.findByIdAndUpdate(user.wallet._id, {
+    balance: user.wallet.balance + amount,
+  });
+
   user.wallet.balance += amount;
-  await wallet.save();
+  await user.save();
 
   // Return response
 
