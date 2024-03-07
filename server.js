@@ -30,6 +30,7 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
 app.use("/api/admin", authenticateToken, require("./routes/admin/adminRoute"));
 app.use("/api/transaction", require("./routes/admin/transactionRoute"));
+app.use("/api/get_transactions", require("./routes/userTransaction"));
 app.use("/api/public", require("./routes/public"));
 
 app.listen(PORT, console.log("Server is running on port ", PORT));

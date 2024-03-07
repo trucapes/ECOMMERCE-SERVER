@@ -13,5 +13,5 @@ const connectDB = async () => {
 };
 
 module.exports = connectDB;
-//
+//mongodb+srv://truscapeslighting:tuscikde@cluster0.a0kvj.mongodb.net/
 //mongodb://localhost:27017
