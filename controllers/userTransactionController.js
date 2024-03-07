@@ -5,7 +5,7 @@ async function getTransactions(req, res) {
   try {
     const transactions = await Transaction.find({ user: req.user.id });
 
-    console.log(transactions);
+    // console.log(transactions);
     return res.status(200).json({
       error: false,
       message: "Transactions fetched successfully",

@@ -7,15 +7,15 @@ async function processTransaction(req, res) {
   let description;
   // Check if user is admin
 
-  
   if (from.userRole !== "admin") {
     return res.status(400).json({ error: true, message: "Unauthorized" });
   }
 
   // Check if user exists and populate wallet
 
+  // console.log(to);
   const user = await userModel.findById(to).populate("wallet");
-  console.log(user.wallet);
+  // console.log(user.wallet);
   if (!user) {
     return res.status(400).json({ error: true, message: "User not found" });
   }

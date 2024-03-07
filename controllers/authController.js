@@ -59,6 +59,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   const { identifier, password } = req.body;
+  // console.log(identifier, password);
 
   try {
     // Find user by email or mobile number
