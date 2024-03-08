@@ -3,7 +3,7 @@ const userModel = require("../models/userModel");
 
 async function getTransactions(req, res) {
   try {
-    const transactions = await Transaction.find({ user: req.user.id });
+    const transactions = await Transaction.find({ user: req.user.id }).sort({date: -1});
 
     // console.log(transactions);
     return res.status(200).json({
