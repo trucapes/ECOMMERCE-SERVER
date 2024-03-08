@@ -60,6 +60,12 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    orders: [
+      {
+        type: Boolean,
+        default: false,
+      },
+    ],
     wallet: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Wallet",

@@ -3,7 +3,16 @@ const userModel = require("../../models/userModel");
 const walletModel = require("../../models/walletModel");
 
 async function processTransaction(req, res) {
-  const { from, to, amount } = req.body;
+  let { from, to, amount } = req.body;
+
+  if (amount[0] == "-") {
+    amount = amount.slice(1);
+    amount = Number(amount) * -1;
+  } else {
+    amount = Number(amount);
+  }
+
+  console.log(amount);
   let description;
   // Check if user is admin
 
@@ -23,7 +32,7 @@ async function processTransaction(req, res) {
   // Check if balance is sufficient
 
   if (user.wallet.balance + amount < 0) {
-    return res.status(400).json({
+    return res.status(200).json({
       error: false,
       message: "Insufficient balance",
     });
