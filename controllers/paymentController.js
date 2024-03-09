@@ -16,6 +16,7 @@ const initializePayment = async (req, res) => {
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   let orders = items.map((item) => {
     return {
+      name: item.name,
       product: item.product,
       quantity: item.quantity,
       price: item.price,
@@ -46,9 +47,12 @@ const initializePayment = async (req, res) => {
     const newTransaction = new Transaction({
       user: userID,
       amount: amount * -1,
-      description: "Order Debit Transaction",
+      description: " Debit for Order - ",
       balanceRemaining: parseFloat(user.wallet.balance) - parseFloat(amount),
     });
+
+    newTransaction.description =
+      newTransaction.description + newTransaction._id;
 
     await newTransaction.save();
 

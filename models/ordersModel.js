@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const orderSchema = new mongoose.Schema(
   {
     transactionId: {
-      type: mongoose.Schema.Types.ObjectId, ref: "Transaction",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Transaction",
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -15,6 +16,10 @@ const orderSchema = new mongoose.Schema(
     },
     products: [
       {
+        name: {
+          type: String,
+          required: true,
+        },
         product: {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
