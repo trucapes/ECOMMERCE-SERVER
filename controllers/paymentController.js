@@ -10,7 +10,16 @@ const CHAPA_URL =
 const CHAPA_AUTH = process.env.CHAPA_AUTH; // || register to chapa and get the key
 
 const initializePayment = async (req, res) => {
-  const { items, reason, amount, userID } = req.body;
+  let {
+    items,
+    reason,
+    amount,
+    userID,
+    addressLine1,
+    addressLine2,
+    city,
+    pincode,
+  } = req.body;
 
   // console.log(items, reason, amount, userID);
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,6 +70,12 @@ const initializePayment = async (req, res) => {
       userId: userID,
       price: amount,
       products: [],
+      shippingAddress: {
+        addressLine1,
+        addressLine2,
+        city,
+        pincode: Number(pincode),
+      },
     });
 
     orders.forEach((order) => {
