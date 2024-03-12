@@ -33,5 +33,6 @@ app.use("/api/transaction", require("./routes/admin/transactionRoute"));
 app.use("/api/get_transactions", require("./routes/userTransaction"));
 app.use("/api/public", require("./routes/public"));
 app.use("/api/order", require("./routes/orders"));
+app.use("/api/products", require("./routes/userProduct"))
 
 app.listen(PORT, console.log("Server is running on port ", PORT));
