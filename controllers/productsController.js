@@ -3,36 +3,36 @@ const Product = require("../models/productModel");
 
 const getFeaturedProducts = async (req, res) => {
   console.log("first");
-  const products = await Product.find({}).populate("category");
-  //   await Product.aggregate([
-  //     {
-  //       $lookup: {
-  //         from: "categories", // The name of the collection in your MongoDB database
-  //         localField: "category", // Field in the Product model
-  //         foreignField: "_id", // Field in the Category model
-  //         as: "categoryDetails", // Name of the field to store the category details
-  //       },
-  //     },
-  //     {
-  //       $unwind: "$categoryDetails", // Deconstruct the array produced by the $lookup stage
-  //     },
-  //     {
-  //       $sort: { index: -1 },
-  //     },
-  //     {
-  //       $group: {
-  //         _id: "$categoryDetails._id", // Group by category ObjectId
-  //         title: { $first: "$categoryDetails.name" }, // Assuming category name is stored in 'name' field
-  //         value: { $push: "$$ROOT" }, // Store products belonging to each category
-  //       },
-  //     },
-  //     {
-  //       $project: {
-  //         category: "$_id",
-  //         value: { $slice: ["$value", 8] }, // Retrieve top 8 products for each category
-  //       },
-  //     },
-  //   ]);
+  // const products = await Product.find({}).populate("category");
+  await Product.aggregate([
+    {
+      $lookup: {
+        from: "categories", // The name of the collection in your MongoDB database
+        localField: "category", // Field in the Product model
+        foreignField: "_id", // Field in the Category model
+        as: "categoryDetails", // Name of the field to store the category details
+      },
+    },
+    {
+      $unwind: "$categoryDetails", // Deconstruct the array produced by the $lookup stage
+    },
+    {
+      $sort: { index: -1 },
+    },
+    {
+      $group: {
+        _id: "$categoryDetails._id", // Group by category ObjectId
+        title: { $first: "$categoryDetails.name" }, // Assuming category name is stored in 'name' field
+        value: { $push: "$$ROOT" }, // Store products belonging to each category
+      },
+    },
+    {
+      $project: {
+        category: "$_id",
+        value: { $slice: ["$value", 8] }, // Retrieve top 8 products for each category
+      },
+    },
+  ]);
   return res.json({ error: false, data: products });
 };
 
