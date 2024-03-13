@@ -4,7 +4,7 @@ const Product = require("../models/productModel");
 const getFeaturedProducts = async (req, res) => {
   console.log("first");
   // const products = await Product.find({}).populate("category");
-  await Product.aggregate([
+  const products = await Product.aggregate([
     {
       $lookup: {
         from: "categories", // The name of the collection in your MongoDB database
