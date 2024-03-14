@@ -21,14 +21,16 @@ const initializePayment = async (req, res) => {
     pincode,
   } = req.body;
 
-  // console.log(items, reason, amount, userID);
+  console.log(items, reason, amount, userID);
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////
   let orders = items.map((item) => {
     return {
+      category:item.category,
       name: item.name,
       product: item.product,
       quantity: item.quantity,
       price: item.price,
+      imagePath: item.image,
     };
   });
 
