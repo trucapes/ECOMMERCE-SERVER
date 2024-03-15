@@ -1,5 +1,5 @@
-const express = require("express")
-const router = express.Router()
+const express = require("express");
+const router = express.Router();
 const { getCategories } = require("../controllers/publicController");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
@@ -27,9 +27,8 @@ const getRequestUser = async (req, res, next) => {
   }
 };
 
-router.use(getRequestUser)
+router.use(getRequestUser);
 
-router.get('/categories', getCategories)
+router.get("/categories", getCategories);
 
-
-module.exports = router
+module.exports = router;
