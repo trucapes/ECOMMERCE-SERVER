@@ -3,12 +3,12 @@ const Product = require("../models/productModel");
 
 // Get user profile
 const getCategories = async (req, res) => {
-  console.log(req.headers);
+  console.log("req.headers");
   const reqType = req.headers.for;
 
   if (reqType === "categories") {
     try {
-      const user = await Category.find().sort("-index");
+      const user = await Category.find().sort({ index: -1 });
       res.json({ error: false, data: user });
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -24,7 +24,9 @@ const getCategories = async (req, res) => {
       filter.name = req.query.name;
     }
     try {
-      const user = await Category.findOne(filter).limit(limit).sort("-index");
+      const user = await Category.findOne(filter)
+        .limit(limit)
+        .sort({ index: -1 });
 
       const products = await Product.find(user._id)
         .populate("category")

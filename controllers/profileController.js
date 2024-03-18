@@ -3,13 +3,15 @@ const User = require("../models/userModel");
 // Get user profile
 const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate("wallet");
+    const user = await User.findById(req.user._id)
+      .populate("wallet")
+      .populate("credit");
 
     if (!user) {
       return res.status(404).json({ error: true, message: "User not found" });
     }
 
-    //Perhaps the user Object is frozen, so we need to clone it and the send only wallet balance to frontend
+    //Perhaps the user Object is frozen, so we need to clone it and then send only wallet balance to frontend
     let clonedUser = { ...user };
     clonedUser = { ...clonedUser._doc };
     clonedUser.walletBalance = user.wallet.balance;

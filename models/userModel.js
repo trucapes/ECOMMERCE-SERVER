@@ -66,6 +66,11 @@ const userSchema = new Schema(
         default: false,
       },
     ],
+    credit: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Credit",
+      default: null,
+    },
     wallet: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Wallet",

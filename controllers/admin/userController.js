@@ -38,11 +38,12 @@ const UserController = {
       sortOptions[sortBy] = -1;
 
       const users = await User.find(filter)
+        .populate("credit")
         .populate("wallet")
         .skip(skip)
         .limit(parseInt(limit))
         .sort(sortOptions);
-
+      console.log("Ye", users);
       const totalUsersCount = await User.countDocuments(filter);
       const totalPages = Math.ceil(totalUsersCount / limit);
 

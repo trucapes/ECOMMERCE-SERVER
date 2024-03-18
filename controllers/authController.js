@@ -1,9 +1,9 @@
 // controllers/authController.js
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 const Wallet = require("../models/walletModel");
+const creditModel = require("../models/creditModel");
 
 const JWT_SECRET = "ashdliashkldjnaslkcjlNcilHcoqla8weduoqwscbkjzbxkjbzdhw3hdi";
 
@@ -39,12 +39,19 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
+    const credit = new creditModel({
+      user: newUser._id,
+      credit: 0,
+    });
+
     const wallet = new Wallet({
       userId: newUser._id,
     });
 
     newUser.wallet = wallet;
+    newUser.credit = credit;
 
+    await credit.save();
     await newUser.save();
     await wallet.save();
 
