@@ -30,9 +30,9 @@ router.post("/sendRequest", async (req, res) => {
     });
     //Create the mail options
     const mailOptions = {
-      from: "Aditya drdwyn1@gmail.com",
+      from: "TruScapes drdwyn1@gmail.com",
       to: user.email,
-      subject: "Please Verify Your OTP",
+      subject: "Kindly pay your due credit amount",
       html: template,
     };
     //Send the mail
