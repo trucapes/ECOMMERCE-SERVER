@@ -19,4 +19,3 @@ const creditSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Credit", creditSchema);
-

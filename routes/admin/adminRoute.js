@@ -22,5 +22,9 @@ router.use(isAdmin);
 router.use("/users", userRoutes);
 router.use("/category", require("./categoryRoutes"));
 router.use("/products", require("./productRoute"));
+router.use(
+  "/repayment",
+  require("../../controllers/admin/repaymentController")
+);
 
 module.exports = router;
