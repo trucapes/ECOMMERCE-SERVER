@@ -31,7 +31,7 @@ router.post("/sendRequest", async (req, res) => {
     //Create the mail options
     const mailOptions = {
       from: "TruScapes drdwyn1@gmail.com",
-      to: user.email,
+      to: "arsrivastawa2710@gmail.com",
       subject: "Kindly pay your due credit amount",
       html: template,
     };
