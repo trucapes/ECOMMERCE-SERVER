@@ -74,9 +74,9 @@ const getProductsById = async (req, res) => {
 
 const getProductByCategory = async (req, res) => {
   //Destructuring the query parameters
-console.log("Ye Wala")
+  console.log("Ye Wala");
   try {
-    let { page = 1, limit = 20, category } = req.query;
+    let { page = 1, limit = 8, category } = req.query;
     let filter = {};
     const skip = (page - 1) * limit;
 
@@ -97,11 +97,13 @@ console.log("Ye Wala")
     //Finding products based on category document also applying pagination
     const products = await Product.find(filter)
       .populate("category")
+      .skip(skip)
       .limit(parseInt(limit));
-
+    const totalProducts = await Product.countDocuments(filter);
+    const totalPages = Math.ceil(totalProducts / limit);
     return res.json({
       error: false,
-      data: { name: categoryDoc, page, limit, filter, products },
+      data: { name: categoryDoc, page, limit, filter, products, totalPages },
     });
   } catch (error) {
     return res
