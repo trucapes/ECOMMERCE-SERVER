@@ -284,7 +284,7 @@ const initializePayment = async (req, res) => {
                   .getErrorText(),
               });
             } else {
-              const order = new ordersModel({
+              const newOrder = new ordersModel({
                 transactionId: response.getTransactionResponse().getTransId(),
                 userId: userID,
                 price: amount,
@@ -301,7 +301,7 @@ const initializePayment = async (req, res) => {
                 newOrder.products.push(order);
               });
 
-              await order.save();
+              await newOrder.save();
               return res
                 .status(201)
                 .json({ error: false, message: "Order Successful" });
