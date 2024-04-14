@@ -9,6 +9,6 @@ const {
 // initialize payment endpoint
 router.post("/", initializePayment);
 
-router.get("/payCredit", payCreditBalance);
+router.post("/payCredit", payCreditBalance);
 
 module.exports = router;
