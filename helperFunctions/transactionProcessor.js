@@ -26,13 +26,13 @@ const transactionProcessor = async (res, to, amount) => {
   }
 
   // Process transaction
-  if (amount > 0) {
-    const creditWallet = await creditModel.findOne({ user: user._id });
-    await creditModel.findOneAndUpdate(
-      { user: user._id },
-      { credit: creditWallet.credit + amount }
-    );
-  }
+  // if (amount > 0) {
+  const creditWallet = await creditModel.findOne({ user: user._id });
+  await creditModel.findOneAndUpdate(
+    { user: user._id },
+    { credit: creditWallet.credit + amount }
+  );
+  // }
 
   const newTransaction = new Transaction({
     user: to,

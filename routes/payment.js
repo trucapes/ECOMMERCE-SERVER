@@ -3,12 +3,12 @@ const router = express.Router();
 const {
   initializePayment,
   verifyPayment,
+  payCreditBalance,
 } = require("../controllers/paymentController");
 
 // initialize payment endpoint
 router.post("/", initializePayment);
 
-// verfiy payment endpoint
-router.get("/verify/:id", verifyPayment);
+router.get("/payCredit", payCreditBalance);
 
 module.exports = router;

@@ -14,23 +14,7 @@ const CHAPA_URL =
 const CHAPA_AUTH = process.env.CHAPA_AUTH; // || register to chapa and get the key
 
 const authorizePayment = async (
-  {
-    items,
-    reason,
-    amount,
-    userID,
-    addressLine1,
-    addressLine2,
-    city,
-    pincode,
-    paymentMethod,
-    card,
-    cvv,
-    expiryMonth,
-    expiryYear,
-    orders,
-    user,
-  },
+  { amount, card, cvv, expiryMonth, expiryYear },
   callback
 ) => {
   const merchantAuthenticationType =
@@ -92,25 +76,6 @@ const authorizePayment = async (
         ApiContracts.MessageTypeEnum.OK
       ) {
         if (response.getTransactionResponse().getMessages() != null) {
-          const order = new ordersModel({
-            transactionId: response.getTransactionResponse().getTransId(),
-            userId: userID,
-            price: amount,
-            products: [],
-            shippingAddress: {
-              addressLine1,
-              addressLine2,
-              city,
-              pincode: Number(pincode),
-            },
-          });
-
-          orders.forEach((order) => {
-            newOrder.products.push(order);
-          });
-
-          await order.save();
-
           console.log(
             "Successfully created transaction with Transaction ID: " +
               response.getTransactionResponse().getTransId()
@@ -298,27 +263,53 @@ const initializePayment = async (req, res) => {
       // initiating the transaction
       authorizePayment(
         {
-          items,
-          reason,
           amount,
-          userID,
-          addressLine1,
-          addressLine2,
-          city,
-          pincode,
-          paymentMethod,
           card,
           cvv,
           expiryMonth,
           expiryYear,
-          orders,
-          user,
         },
         async (response) => {
           if (response != null) {
-            console.log(response);
+            if (
+              response.getTransactionResponse() != null &&
+              response.getTransactionResponse().getErrors() != null
+            ) {
+              res.status(200).json({
+                error: true,
+                message: response
+                  .getTransactionResponse()
+                  .getErrors()
+                  .getError()[0]
+                  .getErrorText(),
+              });
+            } else {
+              const order = new ordersModel({
+                transactionId: response.getTransactionResponse().getTransId(),
+                userId: userID,
+                price: amount,
+                products: [],
+                shippingAddress: {
+                  addressLine1,
+                  addressLine2,
+                  city,
+                  pincode: Number(pincode),
+                },
+              });
+
+              orders.forEach((order) => {
+                newOrder.products.push(order);
+              });
+
+              await order.save();
+              return res
+                .status(201)
+                .json({ error: false, message: "Order Successful" });
+            }
           } else {
-            console.log("No response");
+            return res
+              .status(500)
+              .json({ error: true, message: "Internal Server Error" });
           }
         }
       );
@@ -333,19 +324,73 @@ const initializePayment = async (req, res) => {
   /////////////////////////////////////////////////////////////////////////////////////
 };
 
-const verifyPayment = async (req, res) => {
-  await axios
-    .get("https://api.chapa.co/v1/transaction/verify/" + req.params.id, config)
-    .then((response) => {
-      console.log(response);
-      res.json({ message: response });
-    })
-    .catch((err) => {
-      console.log("Payment can't be verfied", err);
-      res.json({ error: err });
-    });
+const payCreditBalance = async (req, res) => {
+  const { card, cvv, expiryMonth, expiryYear } = req.body;
 
-  res.json({ message: "response", param: req.params.id });
+  if (!req.user) {
+    return res
+      .status(403)
+      .json({ error: true, message: "Unauthorized : Invalid token" });
+  }
+
+  if (!card || !cvv || !expiryMonth || !expiryYear) {
+    return res
+      .status(200)
+      .json({ error: true, message: "Missing credit card details" });
+  }
+
+  const user = await userModel
+    .findById(req.user._id)
+    .populate("credit")
+    .populate("wallet");
+  if (!user) {
+    return res.status(404).json({ error: true, message: "User not found" });
+  }
+
+  if (user.credit.credit <= 0) {
+    return res
+      .status(200)
+      .json({ error: true, message: "You do not have any credit to repay." });
+  }
+
+  authorizePayment(
+    {
+      amount: user.credit.credit,
+      card,
+      cvv,
+      expiryMonth,
+      expiryYear,
+    },
+    async (response) => {
+      if (response != null) {
+        if (
+          response.getTransactionResponse() != null &&
+          response.getTransactionResponse().getErrors() != null
+        ) {
+          res.status(200).json({
+            error: true,
+            message: response
+              .getTransactionResponse()
+              .getErrors()
+              .getError()[0]
+              .getErrorText(),
+          });
+        } else {
+          // const newCredit = user.credit.credit - user.credit.credit;
+          await userModel.findByIdAndUpdate(user._id, {
+            credit: 0,
+          });
+          return res
+            .status(201)
+            .json({ error: false, message: "Payment Successful" });
+        }
+      } else {
+        return res
+          .status(500)
+          .json({ error: true, message: "Internal Server Error" });
+      }
+    }
+  );
 };
 
-module.exports = { initializePayment, verifyPayment };
+module.exports = { initializePayment, payCreditBalance };
