@@ -284,8 +284,19 @@ const initializePayment = async (req, res) => {
                   .getErrorText(),
               });
             } else {
+              const transactionCreated = new Transaction({
+                user: userID,
+                amount: amount * -1,
+                description:
+                  " Transaction ID - " +
+                  response.getTransactionResponse().getTransId(),
+                balanceRemaining:
+                  parseFloat(user.wallet.balance) - parseFloat(amount),
+              });
+
+              await transactionCreated.save();
               const newOrder = new ordersModel({
-                transactionId: response.getTransactionResponse().getTransId(),
+                transactionId: transactionCreated._id,
                 userId: userID,
                 price: amount,
                 products: [],
@@ -297,14 +308,15 @@ const initializePayment = async (req, res) => {
                 },
               });
 
-              newOrder.forEach((order) => {
+              orders.forEach((order) => {
                 newOrder.products.push(order);
               });
 
               await newOrder.save();
-              return res
-                .status(201)
-                .json({ error: false, message: "Order Successful" });
+              return res.status(201).json({
+                error: false,
+                message: "Order Successful",
+              });
             }
           } else {
             return res
