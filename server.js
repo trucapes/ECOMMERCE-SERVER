@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.use(cors());
 
 app.use("/api/items", require("./routes/items"));
-app.use("/api/payment", require("./routes/payment"));
+app.use("/api/payment", authenticateToken, require("./routes/payment"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/profile", require("./routes/profile"));
 app.use("/api/admin", authenticateToken, require("./routes/admin/adminRoute"));
