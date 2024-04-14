@@ -297,7 +297,7 @@ const initializePayment = async (req, res) => {
                 },
               });
 
-              orders.forEach((order) => {
+              newOrder.forEach((order) => {
                 newOrder.products.push(order);
               });
 
@@ -308,7 +308,7 @@ const initializePayment = async (req, res) => {
             }
           } else {
             return res
-              .status(500)
+              .status(200)
               .json({ error: true, message: "Internal Server Error" });
           }
         }
