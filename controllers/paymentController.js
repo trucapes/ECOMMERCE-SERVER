@@ -330,7 +330,7 @@ const payCreditBalance = async (req, res) => {
   if (!req.user) {
     return res
       .status(403)
-      .json({ error: true, message: "Unauthorized : Invalid token" });
+      .json({ error: true, message: "Unauthorized :  token" });
   }
 
   if (!card || !cvv || !expiryMonth || !expiryYear) {
