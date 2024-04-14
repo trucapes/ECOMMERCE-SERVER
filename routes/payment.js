@@ -8,6 +8,9 @@ const {
 
 // initialize payment endpoint
 router.post("/", initializePayment);
+router.get("/", (req, res) => {
+  res.send("Server is up and running");
+});
 
 router.post("/payCredit", payCreditBalance);
 
