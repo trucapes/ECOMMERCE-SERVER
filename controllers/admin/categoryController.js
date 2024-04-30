@@ -43,9 +43,8 @@ const CategoryController = {
   createCategory: async (req, res) => {
     try {
       const { name, index } = req.body;
-      
 
-      console.log(req.file);
+      // console.log(req.file);
       const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
 
       const newCategory = new Category({
@@ -54,15 +53,12 @@ const CategoryController = {
         image,
       });
 
-
       await newCategory.save();
 
       res.json({ error: false, message: "Category created successfully" });
     } catch (error) {
       console.error("Error creating category:", error);
-      res
-        .status(500)
-        .json({ error: true, message: "Internal Server Error" });
+      res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
 
@@ -80,7 +76,7 @@ const CategoryController = {
           .json({ error: true, message: "Category not found" });
       }
 
-      if(req.file) category.image = req.file.path;
+      if (req.file) category.image = req.file.path;
       // Update category fields
       if (name) category.name = name;
       if (index) category.index = parseInt(index);
@@ -91,9 +87,7 @@ const CategoryController = {
       res.json({ error: false, message: "Category updated successfully" });
     } catch (error) {
       console.error("Error editing category:", error);
-      res
-        .status(500)
-        .json({ error: true, message: "Internal Server Error" });
+      res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
 
@@ -108,9 +102,7 @@ const CategoryController = {
       res.json({ error: false, message: "Category deleted successfully" });
     } catch (error) {
       console.error("Error deleting category:", error);
-      res
-        .status(500)
-        .json({ error: true, message: "Internal Server Error" });
+      res.status(500).json({ error: true, message: "Internal Server Error" });
     }
   },
 };

@@ -23,7 +23,7 @@ const UserController = {
         filter.userRole = userRole;
       }
       if (search) {
-        console.log("Search Query is not empty:", search); // Add this line to check if search parameter is not empty
+        // console.log("Search Query is not empty:", search); // Add this line to check if search parameter is not empty
         filter.$or = [
           { lastName: { $regex: search, $options: "i" } },
           { firstName: { $regex: search, $options: "i" } },
@@ -31,7 +31,7 @@ const UserController = {
         ];
       }
 
-      console.log("Filter:", filter); // Add this line to check the constructed filter object
+      // console.log("Filter:", filter); // Add this line to check the constructed filter object
 
       const skip = (page - 1) * limit;
       const sortOptions = {};
@@ -43,7 +43,7 @@ const UserController = {
         .skip(skip)
         .limit(parseInt(limit))
         .sort(sortOptions);
-      console.log("Ye", users);
+      // console.log("Ye", users);
       const totalUsersCount = await User.countDocuments(filter);
       const totalPages = Math.ceil(totalUsersCount / limit);
 

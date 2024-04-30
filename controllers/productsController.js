@@ -16,7 +16,7 @@ const getHomeProducts = async (req, res) => {
 };
 
 const getFeaturedProducts = async (req, res) => {
-  console.log("first");
+  // console.log("first");
   // const products = await Product.find({}).populate("category");
   try {
     const products = await Product.aggregate([
@@ -73,17 +73,17 @@ const getProductsById = async (req, res) => {
 };
 
 const getProductByCategory = async (req, res) => {
-  //Destructuring the query parameters
-  console.log("Ye Wala");
   try {
-    let { page = 1, limit = 8, category } = req.query;
+    let { page = 1, limit = 8, category, q } = req.query;
+    if (q) {
+      return searchProducts(req, res);
+    }
     let filter = {};
     const skip = (page - 1) * limit;
 
     let categoryDoc; //Variable to store category document
     if (category && category.length !== 24) {
       category = category[0].toUpperCase() + category.slice(1); //Converting category name to Title case
-      console.log(category);
       //   console.log(page, limit, category);
 
       //Finding category document based on category name
@@ -112,11 +112,24 @@ const getProductByCategory = async (req, res) => {
   }
 };
 
+const searchProducts = async (req, res) => {
+  const { q } = req.query;
+  try {
+    const products = await Product.find({ name: { $regex: q, $options: "i" } });
+    return res.status(200).json({ error: false, data: products });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   getFeaturedProducts,
   getHomeProducts,
   getProductsById,
   getProductByCategory,
+  searchProducts,
 };
 
 /* (filter)

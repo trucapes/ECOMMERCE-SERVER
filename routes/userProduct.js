@@ -4,6 +4,7 @@ const {
   getProductByCategory,
   getHomeProducts,
   getFeaturedProducts,
+  searchProducts,
 } = require("../controllers/productsController");
 
 const router = express.Router();

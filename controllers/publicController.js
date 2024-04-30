@@ -3,7 +3,7 @@ const Product = require("../models/productModel");
 
 // Get user profile
 const getCategories = async (req, res) => {
-  console.log("req.headers");
+  // console.log("req.headers");
   const reqType = req.headers.for;
 
   if (reqType === "categories") {

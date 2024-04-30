@@ -8,7 +8,7 @@ const isAdmin = (req, res, next) => {
   if (req.user && req.user.userRole === "admin") {
     next();
   } else {
-    console.log(req.user);
+    // console.log(req.user);
     res
       .status(403)
       .json({ error: true, message: "Unauthorized: Admin access only" });

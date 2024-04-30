@@ -8,7 +8,7 @@ router.post("", async (req, res) => {
     return res.status(400).json({ error: true, data: "Invalid user id" });
   const creditWallet = await creditModel.find({ user: user });
 
-  console.log(req.body);
+  // console.log(req.body);
   res.json({ error: false, message: creditWallet });
 });
 

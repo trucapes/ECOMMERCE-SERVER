@@ -17,7 +17,7 @@ const getProfile = async (req, res) => {
     clonedUser.walletBalance = user.wallet.balance;
     delete clonedUser.wallet;
 
-    console.log("\n", clonedUser);
+    // console.log("\n", clonedUser);
 
     res.json({ error: false, data: clonedUser });
   } catch (error) {
