@@ -12,7 +12,7 @@ const getGallery = async (req, res) => {
 // get gallary with pagination
 const getGalleryWithPagination = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = parseInt(req.query.limit) || 20;
     const skipIndex = (page - 1) * limit;
 
     try {
@@ -24,9 +24,9 @@ const getGalleryWithPagination = async (req, res) => {
 }
 
 const addGallery = async (req, res) => {
-    const { userId, title, url } = req.body;
+    const {title, url } = req.body;
     try {
-        const gallery = new Gallery({ userId, title, url });
+        const gallery = new Gallery({ title, url });
         await gallery.save();
         res.status(201).json({ error: false, message: "Gallery added successfully" });
     } catch (error) {

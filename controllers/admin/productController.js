@@ -7,7 +7,6 @@ const productController = {
   // Create a new product
   createProduct: async (req, res) => {
     try {
-      // console.log(req.body)
       req_product = {
         name: req.body.name,
         description: req.body.description,
@@ -29,9 +28,9 @@ const productController = {
           contractor: parseInt(req.body["salesTax.contractor"]),
         },
         shippingCost: parseFloat(req.body.shippingCost),
-        images: req.files,
-        stockAvailable: req.body.stockAvailable === "true",
-        hotProduct: req.body.hotProduct === "true",
+        images: req.body.images,
+        stockAvailable: req.body.stockAvailable ,
+        hotProduct: req.body.hotProduct ,
         index: parseInt(req.body.index),
       };
       const errors = validationResult(req_product);
@@ -62,6 +61,24 @@ const productController = {
   // Update an existing product
   updateProduct: async (req, res) => {
     try {
+
+      if(!req.body.name){
+        // Only update the filds that are comming from the frontend
+        const updatedProductData = await Product.findByIdAndUpdate(
+          req.params.productId,
+          {index: req.body.index},
+        );
+
+        console.log(updatedProductData)
+  
+        res.json({
+          error: false,
+          message: "Product updated successfully",
+          data: updatedProductData,
+        });
+        return;
+      }
+
       req_product = {
         name: req.body.name,
         description: req.body.description,
@@ -83,13 +100,14 @@ const productController = {
           contractor: parseInt(req.body["salesTax.contractor"]),
         },
         shippingCost: parseFloat(req.body.shippingCost),
-        stockAvailable: req.body.stockAvailable === "true",
-        hotProduct: req.body.hotProduct === "true",
+        stockAvailable: req.body.stockAvailable,
+        hotProduct: req.body.hotProduct,
         index: parseInt(req.body.index),
       };
-      if (req.files && req.files.length > 0) {
+
+      if (req.body.images && req.body.images.length > 0) {
         // console.log(req.files)
-        req_product.images = req.files;
+        req_product.images = req.body.images;
         // console.log(req_product)
       }
       // console.log(req.files)

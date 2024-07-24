@@ -22,29 +22,33 @@ const getFeaturedProducts = async (req, res) => {
     const products = await Product.aggregate([
       {
         $lookup: {
-          from: "categories", // The name of the collection in your MongoDB database
-          localField: "category", // Field in the Product model
-          foreignField: "_id", // Field in the Category model
-          as: "categoryDetails", // Name of the field to store the category details
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
         },
       },
       {
-        $unwind: "$categoryDetails", // Deconstruct the array produced by the $lookup stage
+        $unwind: "$categoryDetails",
       },
       {
-        $sort: { index: -1 },
+        $sort: { "categoryDetails.index": -1, index: -1 },
       },
       {
         $group: {
-          _id: "$categoryDetails._id", // Group by category ObjectId
-          title: { $first: "$categoryDetails.name" }, // Assuming category name is stored in 'name' field
-          value: { $push: "$$ROOT" }, // Store products belonging to each category
+          _id: "$categoryDetails._id",
+          title: { $first: "$categoryDetails.name" },
+          categoryIndex: { $first: "$categoryDetails.index" },
+          value: { $push: "$$ROOT" },
         },
       },
       {
+        $sort: { categoryIndex: -1 },
+      },
+      {
         $project: {
-          title: "$title",
-          value: { $slice: ["$value", 8] }, // Retrieve top 8 products for each category
+          title: 1,
+          value: { $slice: ["$value", 8] },
         },
       },
     ]);
@@ -74,41 +78,67 @@ const getProductsById = async (req, res) => {
 
 const getProductByCategory = async (req, res) => {
   try {
-    let { page = 1, limit = 8, category, q } = req.query;
+    let { page = 1, limit = 80, category, q } = req.query;
     if (q) {
       return searchProducts(req, res);
     }
-    let filter = {};
+    
+    page = parseInt(page);
+    limit = parseInt(limit);
     const skip = (page - 1) * limit;
 
-    let categoryDoc; //Variable to store category document
-    if (category && category.length !== 24) {
-      category = category[0].toUpperCase() + category.slice(1); //Converting category name to Title case
-      //   console.log(page, limit, category);
+    let filter = {};
+    let categoryDoc;
 
-      //Finding category document based on category name
-      categoryDoc = await Category.findOne({ name: category });
-      filter.category = categoryDoc._id;
-      console.log(categoryDoc);
-    } else if (category) {
-      filter.category = category;
+    if (category) {
+      if (category.length !== 24) {
+        category = category[0].toUpperCase() + category.slice(1);
+        categoryDoc = await Category.findOne({ name: category }).populate("subcategories");
+        
+        if (!categoryDoc) {
+          return res.status(404).json({ error: true, message: "Category not found" });
+        }
+
+        // Include main category and all subcategories
+        const categoryIds = [categoryDoc._id, ...categoryDoc.subcategories.map(sub => sub._id)];
+        filter.category = { $in: categoryIds };
+      } else {
+        // If category is an ObjectId, find the category and its subcategories
+        categoryDoc = await Category.findById(category).populate("subcategories");
+        
+        if (!categoryDoc) {
+          return res.status(404).json({ error: true, message: "Category not found" });
+        }
+
+        const categoryIds = [categoryDoc._id, ...categoryDoc.subcategories.map(sub => sub._id)];
+        filter.category = { $in: categoryIds };
+      }
     }
 
-    //Finding products based on category document also applying pagination
     const products = await Product.find(filter)
       .populate("category")
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit)
+      .sort({ createdAt: -1 }); // Assuming you want to sort by creation date, newest first
+
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);
+
     return res.json({
       error: false,
-      data: { name: categoryDoc, page, limit, filter, products, totalPages },
+      data: {
+        name: categoryDoc,
+        filter,
+        page,
+        limit,
+        products,
+        totalProducts,
+        totalPages,
+      },
     });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: true, message: "Internal Server Error" });
+    console.error(error);
+    return res.status(500).json({ error: true, message: "Internal Server Error" });
   }
 };
 
