@@ -8,7 +8,7 @@ const getCategories = async (req, res) => {
 
   if (reqType === "categories") {
     try {
-      const user = await Category.find({
+      let user = await Category.find({
         $or: [{ parent: null }, { parent: { $exists: false } }]
       }).sort({ index: -1 });
       res.json({ error: false, data: user });
