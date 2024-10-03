@@ -2,7 +2,7 @@ const Gallery = require("../models/galleryModel");
 
 const getGallery = async (req, res) => {
     try {
-        const gallery = await Gallery.find();
+        const gallery = await Gallery.find().sort({ createdAt: -1 });
         res.status(200).json({ error: false, gallery });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
@@ -16,7 +16,7 @@ const getGalleryWithPagination = async (req, res) => {
     const skipIndex = (page - 1) * limit;
 
     try {
-        const gallery = await Gallery.find().limit(limit).skip(skipIndex);
+        const gallery = await Gallery.find().sort({ createdAt: -1 }).limit(limit).skip(skipIndex);
         res.status(200).json({ error: false, gallery });
     } catch (error) {
         res.status(500).json({ error: true, message: error.message });
