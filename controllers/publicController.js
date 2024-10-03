@@ -9,9 +9,9 @@ const getCategories = async (req, res) => {
 
   if (reqType === "categories") {
     try {
-      const user = await Category.find()
-        .sort({ index: -1 })
-        .where({ name: { $ne: "Uncategorized" } });
+      let user = await Category.find({
+        $or: [{ parent: null }, { parent: { $exists: false } }]
+      }).where({ name: { $ne: "Uncategorized" } }).sort({ index: -1 });
       res.json({ error: false, data: user });
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -19,17 +19,22 @@ const getCategories = async (req, res) => {
     }
   } else {
     const page = req.query.page;
-    const name = req.query.name;
     const skip = 16 * (page - 1);
     const limit = 16 * page;
-    let filter = {};
+    let filter = {
+      $or: [{ parent: null }, { parent: { $exists: false } }]
+    };
     if (req.query.name) {
       filter.name = req.query.name;
     }
     try {
       const user = await Category.findOne(filter)
         .limit(limit)
-        .sort({ index: -1 });
+        .sort({ index: -1 })
+        .populate({
+          path: 'subcategories',
+          populate: { path: 'subcategories' }
+        });
 
       const products = await Product.find(user._id)
         .populate("category")

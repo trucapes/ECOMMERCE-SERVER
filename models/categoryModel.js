@@ -16,6 +16,15 @@ const categorySchema = new Schema(
       type: Number,
       default: 1,
     },
+    parent: {
+      type: Schema.Types.ObjectId,
+      ref: 'Category',
+      default: null,
+    },
+    subcategories: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Category'
+    }]
   },
   {
     timestamps: true,

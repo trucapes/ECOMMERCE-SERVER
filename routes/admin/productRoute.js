@@ -48,10 +48,10 @@ const validateProduct = [
 ];
 
 // Create new product route with validation and image upload
-router.post('/', validateProduct, uploadImage.array('images'), productController.createProduct);
+router.post('/', validateProduct, productController.createProduct);
 
 // Update product route with validation and image upload
-router.put('/:productId', validateProduct, uploadImage.array('images'), productController.updateProduct);
+router.put('/:productId', validateProduct, productController.updateProduct);
 
 // Get all products route
 router.get('/', productController.getAllProducts);

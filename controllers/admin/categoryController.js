@@ -5,29 +5,35 @@ const CategoryController = {
   getAllCategories: async (req, res) => {
     try {
       const { page = 1, limit = 200, sortBy = "createdAt", search } = req.query;
-
-      let filter = {};
+  
+      let filter = {
+        $or: [{ parent: null }, { parent: { $exists: false } }]
+      };
       if (search) {
         filter.name = { $regex: search, $options: "i" };
       }
-
+  
       const skip = (page - 1) * limit;
       const sortOptions = {};
       sortOptions[sortBy] = -1;
-
+  
       const categories = await Category.find(filter)
         .skip(skip)
         .limit(parseInt(limit))
-        .sort(sortOptions);
-
+        .sort(sortOptions)
+        .populate({
+          path: 'subcategories',
+          populate: { path: 'subcategories' }
+        });
+  
       const totalCategoriesCount = await Category.countDocuments(filter);
       const totalPages = Math.ceil(totalCategoriesCount / limit);
-
+  
       res.json({
         error: false,
         data: categories,
-        page: page,
-        limit: limit,
+        page: parseInt(page),
+        limit: parseInt(limit),
         totalPages: totalPages,
       });
     } catch (error) {
@@ -42,18 +48,29 @@ const CategoryController = {
   // Create a new category
   createCategory: async (req, res) => {
     try {
-      const { name, index } = req.body;
+      const { name, index, parent, imageUrl } = req.body;
 
-      // console.log(req.file);
-      const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
 
+      console.log(req.body);
+      // const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
+
+      const image = imageUrl;
+
+      
       const newCategory = new Category({
         name,
         index,
         image,
+        parent,
       });
 
       await newCategory.save();
+
+      if (parent) {
+        const parentCategory = await Category.findById(parent);
+        parentCategory.subcategories.push(newCategory._id);
+        await parentCategory.save();
+      }
 
       res.json({ error: false, message: "Category created successfully" });
     } catch (error) {
