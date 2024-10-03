@@ -1,3 +1,4 @@
+const { Types } = require("mongoose");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 
@@ -8,7 +9,9 @@ const getCategories = async (req, res) => {
 
   if (reqType === "categories") {
     try {
-      const user = await Category.find().sort({ index: -1 });
+      const user = await Category.find()
+        .sort({ index: -1 })
+        .where({ name: { $ne: "Uncategorized" } });
       res.json({ error: false, data: user });
     } catch (error) {
       console.error("Error fetching categories:", error);
