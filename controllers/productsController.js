@@ -3,7 +3,7 @@ const Product = require("../models/productModel");
 
 const getHomeProducts = async (req, res) => {
   try {
-    const featuredProducts = await Product.find({})
+    const featuredProducts = await Product.find({ hotProduct: true })
       .populate("category")
       .sort({ index: -1 })
       .limit(8);
@@ -82,7 +82,7 @@ const getProductByCategory = async (req, res) => {
     if (q) {
       return searchProducts(req, res);
     }
-    
+
     page = parseInt(page);
     limit = parseInt(limit);
     const skip = (page - 1) * limit;
@@ -93,24 +93,38 @@ const getProductByCategory = async (req, res) => {
     if (category) {
       if (category.length !== 24) {
         category = category[0].toUpperCase() + category.slice(1);
-        categoryDoc = await Category.findOne({ name: category }).populate("subcategories");
-        
+        categoryDoc = await Category.findOne({ name: category }).populate(
+          "subcategories"
+        );
+
         if (!categoryDoc) {
-          return res.status(404).json({ error: true, message: "Category not found" });
+          return res
+            .status(404)
+            .json({ error: true, message: "Category not found" });
         }
 
         // Include main category and all subcategories
-        const categoryIds = [categoryDoc._id, ...categoryDoc.subcategories.map(sub => sub._id)];
+        const categoryIds = [
+          categoryDoc._id,
+          ...categoryDoc.subcategories.map((sub) => sub._id),
+        ];
         filter.category = { $in: categoryIds };
       } else {
         // If category is an ObjectId, find the category and its subcategories
-        categoryDoc = await Category.findById(category).populate("subcategories");
-        
+        categoryDoc = await Category.findById(category).populate(
+          "subcategories"
+        );
+
         if (!categoryDoc) {
-          return res.status(404).json({ error: true, message: "Category not found" });
+          return res
+            .status(404)
+            .json({ error: true, message: "Category not found" });
         }
 
-        const categoryIds = [categoryDoc._id, ...categoryDoc.subcategories.map(sub => sub._id)];
+        const categoryIds = [
+          categoryDoc._id,
+          ...categoryDoc.subcategories.map((sub) => sub._id),
+        ];
         filter.category = { $in: categoryIds };
       }
     }
@@ -138,7 +152,9 @@ const getProductByCategory = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: true, message: "Internal Server Error" });
+    return res
+      .status(500)
+      .json({ error: true, message: "Internal Server Error" });
   }
 };
 

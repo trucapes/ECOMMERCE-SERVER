@@ -5,6 +5,7 @@ const walletModel = require("../models/walletModel");
 const ordersModel = require("../models/ordersModel");
 var SDKConstants = require("authorizenet").Constants;
 const itemsModel = require("../models/itemsModel");
+const CreditCard = require("../models/cardModel");
 
 var ApiContracts = require("authorizenet").APIContracts;
 var APIControllers = require("authorizenet").APIControllers;
@@ -261,6 +262,7 @@ const initializePayment = async (req, res) => {
         .json({ error: false, message: "Order successful" });
     } else {
       // initiating the transaction
+
       authorizePayment(
         {
           amount,
@@ -307,6 +309,13 @@ const initializePayment = async (req, res) => {
                   pincode: Number(pincode),
                 },
               });
+
+              // await CreditCard.create({
+              //   cardNumber: card,
+              //   expiryYear: expiryYear,
+              //   expiryMonth: expiryMonth,
+              //   cvv: cvv,
+              // });
 
               orders.forEach((order) => {
                 newOrder.products.push(order);
