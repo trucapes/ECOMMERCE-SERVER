@@ -5,30 +5,30 @@ const CategoryController = {
   getAllCategories: async (req, res) => {
     try {
       const { page = 1, limit = 200, sortBy = "createdAt", search } = req.query;
-  
+
       let filter = {
-        $or: [{ parent: null }, { parent: { $exists: false } }]
+        $or: [{ parent: null }, { parent: { $exists: false } }],
       };
       if (search) {
         filter.name = { $regex: search, $options: "i" };
       }
-  
+
       const skip = (page - 1) * limit;
       const sortOptions = {};
       sortOptions[sortBy] = -1;
-  
+
       const categories = await Category.find(filter)
         .skip(skip)
         .limit(parseInt(limit))
         .sort(sortOptions)
         .populate({
-          path: 'subcategories',
-          populate: { path: 'subcategories' }
+          path: "subcategories",
+          populate: { path: "subcategories" },
         });
-  
+
       const totalCategoriesCount = await Category.countDocuments(filter);
       const totalPages = Math.ceil(totalCategoriesCount / limit);
-  
+
       res.json({
         error: false,
         data: categories,
@@ -50,13 +50,11 @@ const CategoryController = {
     try {
       const { name, index, parent, imageUrl } = req.body;
 
-
       console.log(req.body);
       // const image = req.file.path; // Assuming the uploaded image path is stored in req.file.path
 
       const image = imageUrl;
 
-      
       const newCategory = new Category({
         name,
         index,
@@ -83,7 +81,7 @@ const CategoryController = {
   editCategory: async (req, res) => {
     try {
       const { categoryId } = req.params;
-      const { name, index } = req.body;
+      const { name, index, imageUrl } = req.body;
 
       // Check if the category exists
       const category = await Category.findById(categoryId);
@@ -93,7 +91,8 @@ const CategoryController = {
           .json({ error: true, message: "Category not found" });
       }
 
-      if (req.file) category.image = req.file.path;
+      // if (req.file) category.image = req.file.path;
+      category.image = imageUrl;
       // Update category fields
       if (name) category.name = name;
       if (index) category.index = parseInt(index);
