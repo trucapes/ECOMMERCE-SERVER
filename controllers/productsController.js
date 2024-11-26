@@ -32,7 +32,7 @@ const getFeaturedProducts = async (req, res) => {
         $unwind: "$categoryDetails",
       },
       {
-        $sort: { "categoryDetails.index": -1, index: -1 },
+        $sort: { "categoryDetails.index": -1, category_index: -1, index: -1 },
       },
       {
         $group: {
@@ -133,7 +133,7 @@ const getProductByCategory = async (req, res) => {
       .populate("category")
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 }); // Assuming you want to sort by creation date, newest first
+      .sort({ category_index: -1, index: -1, createdAt: -1 }); // Assuming you want to sort by creation date, newest first
 
     const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / limit);

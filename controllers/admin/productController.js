@@ -29,8 +29,8 @@ const productController = {
         },
         shippingCost: parseFloat(req.body.shippingCost),
         images: req.body.images,
-        stockAvailable: req.body.stockAvailable ,
-        hotProduct: req.body.hotProduct ,
+        stockAvailable: req.body.stockAvailable,
+        hotProduct: req.body.hotProduct,
         index: parseInt(req.body.index),
       };
       const errors = validationResult(req_product);
@@ -45,13 +45,11 @@ const productController = {
 
       await newProduct.save();
 
-      res
-        .status(201)
-        .json({
-          error: false,
-          message: "Product created successfully",
-          data: newProduct,
-        });
+      res.status(201).json({
+        error: false,
+        message: "Product created successfully",
+        data: newProduct,
+      });
     } catch (error) {
       console.error("Error creating product:", error);
       res.status(500).json({ error: true, message: "Internal Server Error" });
@@ -61,16 +59,16 @@ const productController = {
   // Update an existing product
   updateProduct: async (req, res) => {
     try {
-
-      if(!req.body.name){
+      if (!req.body.name) {
         // Only update the filds that are comming from the frontend
         const updatedProductData = await Product.findByIdAndUpdate(
           req.params.productId,
-          {index: req.body.index},
+          { index: req.body.index, category_index: req.body.category_index },
+          { new: true }
         );
 
-        console.log(updatedProductData)
-  
+        // console.log(updatedProductData);
+
         res.json({
           error: false,
           message: "Product updated successfully",
@@ -103,6 +101,7 @@ const productController = {
         stockAvailable: req.body.stockAvailable,
         hotProduct: req.body.hotProduct,
         index: parseInt(req.body.index),
+        category_index: parseInt(req.body.category_index),
       };
 
       if (req.body.images && req.body.images.length > 0) {
@@ -113,13 +112,11 @@ const productController = {
       // console.log(req.files)
       const errors = validationResult(req_product);
       if (!errors.isEmpty()) {
-        return res
-          .status(400)
-          .json({
-            error: true,
-            message: "Validation Error",
-            errors: errors.array(),
-          });
+        return res.status(400).json({
+          error: true,
+          message: "Validation Error",
+          errors: errors.array(),
+        });
       }
 
       const updatedProductData = await Product.findByIdAndUpdate(
@@ -145,7 +142,13 @@ const productController = {
   // Get all products
   getAllProducts: async (req, res) => {
     try {
-      const { page = 1, limit = 20, sortBy = "createdAt", search } = req.query;
+      const {
+        page = 1,
+        limit = 20,
+        sortBy = "createdAt",
+        search,
+        category_id,
+      } = req.query;
 
       let filter = {};
       if (search) {
@@ -155,9 +158,18 @@ const productController = {
         ];
       }
 
+      if (category_id) {
+        filter["category"] = category_id;
+      }
+
       const skip = (page - 1) * limit;
       const sortOptions = {};
-      sortOptions[sortBy] = -1;
+
+      if (category_id) {
+        sortOptions["category_index"] = -1;
+      } else {
+        sortOptions[sortBy] = -1;
+      }
 
       const products = await Product.find(filter)
         .populate("category")
