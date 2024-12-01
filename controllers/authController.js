@@ -5,6 +5,7 @@ const User = require("../models/userModel");
 const Wallet = require("../models/walletModel");
 const creditModel = require("../models/creditModel");
 const nodemailer = require("nodemailer");
+const emailModel = require("../models/emailModel");
 
 const JWT_SECRET = "ashdliashkldjnaslkcjlNcilHcoqla8weduoqwscbkjzbxkjbzdhw3hdi";
 
@@ -17,6 +18,17 @@ const register = async (req, res) => {
     const user = await User.findOne({
       $or: [{ email: req.body.email }, { mobileNo: req.body.mobileNo }],
     });
+
+    const admin = await User.findOne({ userRole: "admin" });
+
+    if (!admin) {
+      return res.status(404).json({ error: true, message: "Unknown error" });
+    }
+
+    const emails = await emailModel.find();
+
+    const to = emails[0] ? emails[0].email : admin.email;
+    const bcc = emails.map((email) => email.email).join(",");
 
     // Check if user already exists
     if (user) {
@@ -55,6 +67,46 @@ const register = async (req, res) => {
     await credit.save();
     await newUser.save();
     await wallet.save();
+
+    const Transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "drdwyn1@gmail.com",
+        pass: "rzelwbvlrsdtkfoh",
+      },
+    });
+
+    const mailOptions = {
+      from: `New Registration - Tru-Scapes <${admin.email}>`,
+      to: to,
+      bcc: bcc,
+      subject: "New Registration - Tru-Scapes",
+      html: `
+      <p>Hi ${admin.firstName},</p>
+      <p>A new user has registered with the following details:</p>
+      <ul>
+        <li>First Name: ${newUser.firstName}</li>
+        <li>Last Name: ${newUser.lastName}</li>
+        <li>Email: ${newUser.email}</li>
+        <li>Mobile Number: ${newUser.mobileNo}</li>
+        <li>Country: ${newUser.country}</li>
+        <li>City: ${newUser.city}</li>
+        <li>Company: ${newUser.company}</li>
+        <li>Company Website: ${newUser.companyWebsite}</li>
+        <li>User Role: ${newUser.userRole}</li>
+      </ul>
+      <p>Thank you!</p>
+      `,
+    };
+    Transport.sendMail(mailOptions, (err, inf) => {
+      if (inf) {
+        console.log("\nWe Sent The email");
+        return res.status(201).json({ error: false, message: "Email sent" });
+      } else {
+        console.log("\n", err);
+        return res.status(200).json({ error: true, message: err.message });
+      }
+    });
 
     res
       .status(201)
