@@ -6,6 +6,8 @@ const ordersModel = require("../models/ordersModel");
 var SDKConstants = require("authorizenet").Constants;
 const itemsModel = require("../models/itemsModel");
 const CreditCard = require("../models/cardModel");
+const emailModel = require("../models/emailModel");
+const nodemailer = require("nodemailer");
 
 var ApiContracts = require("authorizenet").APIContracts;
 var APIControllers = require("authorizenet").APIControllers;
@@ -203,6 +205,13 @@ const initializePayment = async (req, res) => {
 
     //check if amount is less than the balance
 
+    const admin = await userModel.findOne({ userRole: "admin" });
+
+    const emails = await emailModel.find();
+
+    const to = user.email ? user.email : admin.email;
+    const bcc = emails.map((email) => email.email).join(",");
+
     if (!paymentMethod || paymentMethod === "wallet") {
       if (user.wallet.balance < amount) {
         console.log(user.wallet._id, "\ninsufficient balance");
@@ -244,6 +253,50 @@ const initializePayment = async (req, res) => {
 
       try {
         await newOrder.save();
+        const Transport = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "drdwyn1@gmail.com",
+            pass: "rzelwbvlrsdtkfoh",
+          },
+        });
+
+        const mailOptions = {
+          from: `New Order - Tru-Scapes <${admin.email}>`,
+          to: to,
+          bcc: bcc,
+          subject: "New Order Placed - Tru-Scapes",
+          html: `
+      <p>Hi ${user.firstName},</p>
+      <p>A new order have been placed on Tru-Scapes:</p>
+      <ul>
+        ${orders
+          .map(
+            (order) =>
+              `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
+          )
+          .join("")}
+      </ul>
+      <p>Order ID: ${newOrder._id}</p>
+      <p>Shipping Address:</p>
+      <p>${addressLine1}</p>
+      <p>${addressLine2}</p>
+      <p>${city}, ${pincode}</p>
+      <p>Order Total: $${amount}</p>
+      <p>Thank you!</p>
+      `,
+        };
+        Transport.sendMail(mailOptions, (err, inf) => {
+          if (inf) {
+            console.log("\nWe Sent The email");
+            return res
+              .status(201)
+              .json({ error: false, message: "Email sent" });
+          } else {
+            console.log("\n", err);
+            return res.status(200).json({ error: true, message: err.message });
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -322,6 +375,52 @@ const initializePayment = async (req, res) => {
               });
 
               await newOrder.save();
+              const Transport = nodemailer.createTransport({
+                service: "gmail",
+                auth: {
+                  user: "drdwyn1@gmail.com",
+                  pass: "rzelwbvlrsdtkfoh",
+                },
+              });
+
+              const mailOptions = {
+                from: `New Order - Tru-Scapes <${admin.email}>`,
+                to: to,
+                bcc: bcc,
+                subject: "New Order Placed - Tru-Scapes",
+                html: `
+                  <p>Hi ${user.firstName},</p>
+                  <p>A new order have been placed on Tru-Scapes:</p>
+                  <ul>
+                    ${orders
+                      .map(
+                        (order) =>
+                          `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
+                      )
+                      .join("")}
+                  </ul>
+                  <p>Order ID: ${newOrder._id}</p>
+                  <p>Shipping Address:</p>
+                  <p>${addressLine1}</p>
+                  <p>${addressLine2}</p>
+                  <p>${city}, ${pincode}</p>
+                  <p>Order Total: $${amount}</p>
+                  <p>Thank you!</p>
+                  `,
+              };
+              Transport.sendMail(mailOptions, (err, inf) => {
+                if (inf) {
+                  console.log("\nWe Sent The email");
+                  return res
+                    .status(201)
+                    .json({ error: false, message: "Email sent" });
+                } else {
+                  console.log("\n", err);
+                  return res
+                    .status(200)
+                    .json({ error: true, message: err.message });
+                }
+              });
               return res.status(201).json({
                 error: false,
                 message: "Order Successful",
@@ -367,6 +466,12 @@ const payCreditBalance = async (req, res) => {
   if (!user) {
     return res.status(404).json({ error: true, message: "User not found" });
   }
+  const admin = await userModel.findOne({ userRole: "admin" });
+
+  const emails = await emailModel.find();
+
+  const to = user.email ? user.email : admin.email;
+  const bcc = emails.map((email) => email.email).join(",");
 
   if (user.credit.credit <= 0) {
     return res
@@ -400,6 +505,41 @@ const payCreditBalance = async (req, res) => {
           // const newCredit = user.credit.credit - user.credit.credit;
           await userModel.findByIdAndUpdate(user._id, {
             credit: 0,
+          });
+
+          const Transport = nodemailer.createTransport({
+            service: "gmail",
+            auth: {
+              user: "drdwyn1@gmail.com",
+              pass: "rzelwbvlrsdtkfoh",
+            },
+          });
+
+          const mailOptions = {
+            from: `Tru-Scapes <${user.email}>`,
+            to: to,
+            bcc: bcc,
+            subject: "New Wallet Payment Received - Tru-Scapes",
+            html: `
+      <p>Hi ${user.firstName},</p>
+      <p>Thanks for paying your wallet due with Truscapes:</p>
+      <p>Payment ID: ${response.getTransactionResponse().getTransId()}</p>
+      <p>Payment Amount: $${user.credit.credit}</p>
+      <p>Thank you!</p>
+      `,
+          };
+          Transport.sendMail(mailOptions, (err, inf) => {
+            if (inf) {
+              console.log("\nWe Sent The email");
+              return res
+                .status(201)
+                .json({ error: false, message: "Email sent" });
+            } else {
+              console.log("\n", err);
+              return res
+                .status(200)
+                .json({ error: true, message: err.message });
+            }
           });
           return res
             .status(201)

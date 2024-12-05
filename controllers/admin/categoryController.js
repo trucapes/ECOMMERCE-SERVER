@@ -92,7 +92,7 @@ const CategoryController = {
       }
 
       // if (req.file) category.image = req.file.path;
-      category.image = imageUrl;
+      if (imageUrl) category.image = imageUrl;
       // Update category fields
       if (name) category.name = name;
       if (index) category.index = parseInt(index);
