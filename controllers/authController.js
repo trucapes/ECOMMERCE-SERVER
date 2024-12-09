@@ -78,12 +78,12 @@ const register = async (req, res) => {
 
     const mailOptions = {
       from: `New Registration - Tru-Scapes <${admin.email}>`,
-      to: to,
+      to: newUser.email,
       bcc: bcc,
       subject: "New Registration - Tru-Scapes",
       html: `
-      <p>Hi ${admin.firstName},</p>
-      <p>A new user has registered with the following details:</p>
+      <p>Hi ${newUser.firstName},</p>
+      <p>New Account Created with the following details:</p>
       <ul>
         <li>First Name: ${newUser.firstName}</li>
         <li>Last Name: ${newUser.lastName}</li>
@@ -95,6 +95,7 @@ const register = async (req, res) => {
         <li>Company Website: ${newUser.companyWebsite}</li>
         <li>User Role: ${newUser.userRole}</li>
       </ul>
+      <p><strong>Admin approval is pending for the account to be activated.<strong></p>
       <p>Thank you!</p>
       `,
     };
@@ -249,6 +250,44 @@ const resetPassword = async (req, res) => {
       { password: hashedPassword },
       { new: true }
     );
+
+    const Transport = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "drdwyn1@gmail.com",
+        pass: "rzelwbvlrsdtkfoh",
+      },
+    });
+
+    const mailOptions = {
+      from: "TruScapes <no-reply@truscapes.com>",
+      to: user.email,
+      subject: "Password Change Notification",
+      html: `<!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Password Change Notification</title>
+      </head>
+      <body>
+        <h1>Password Change Notification</h1>
+        <p>Dear ${user.name},</p>
+        <p>
+          We hope this message finds you well. Kindly be informed that your
+          password has been successfully changed.
+        </p>
+        <p>Thank you for your understanding and cooperation.</p>
+        <p>Best regards,</p>
+        <p>TruScapes</p>
+      </body>
+    </html>`,
+    };
+
+    await Transport.sendMail(mailOptions)
+      .catch((err) => console.log("Error", err))
+      .then((res) => console.log(res));
 
     res
       .status(201)
