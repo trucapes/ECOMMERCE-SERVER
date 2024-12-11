@@ -49,6 +49,7 @@ const editProfile = async (req, res) => {
       city,
       company,
       companyWebsite,
+      companyAddress: req.body.companyAddress,
     };
 
     // Find and update user profile

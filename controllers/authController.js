@@ -48,6 +48,7 @@ const register = async (req, res) => {
       city: req.body.city,
       company: req.body.company,
       companyWebsite: req.body.companyWebsite,
+      companyAddress: req.body.companyAddress,
       userRole: req.body.userRole,
       password: hashedPassword,
     });

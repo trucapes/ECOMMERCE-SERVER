@@ -43,6 +43,10 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+    companyAddress: {
+      type: String,
+      default: "",
+    },
     userRole: {
       type: String,
       enum: ["distributor", "dealer", "contractor", "admin"],

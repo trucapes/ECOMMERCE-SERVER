@@ -112,8 +112,9 @@ const UserController = {
   // Verify user by ID
   verifyUser: async (req, res) => {
     const { userId } = req.params;
+    const { makeAdmin } = req.body;
     try {
-      const user = await User.findByIdAndUpdate(
+      let user = await User.findByIdAndUpdate(
         userId,
         { isPending: false },
         { new: true }
@@ -121,6 +122,15 @@ const UserController = {
       if (!user) {
         return res.status(404).json({ error: true, message: "User not found" });
       }
+
+      if (makeAdmin === true) {
+        user = await User.findByIdAndUpdate(
+          userId,
+          { userRole: "admin" },
+          { new: true }
+        );
+      }
+
       res.json({ error: false, message: "User verified successfully" });
     } catch (error) {
       console.error("Error verifying user:", error);
