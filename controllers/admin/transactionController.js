@@ -37,9 +37,9 @@ async function processTransaction(req, res) {
   });
 
   const mailOptions = {
-    from: "Tru-Scapes",
+    from: "Tru-Scapes®️ <orders@tru-scapes.com>",
     to: user.email,
-    bcc: bcc,
+    // bcc: bcc,
     subject: "Your Tru-Scapes® Wallet Has Been Updated",
     html: `<!DOCTYPE html>
     <html lang="en">
