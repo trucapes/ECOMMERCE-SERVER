@@ -31,8 +31,8 @@ async function processTransaction(req, res) {
   const Transport = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "drdwyn1@gmail.com",
-      pass: "rzelwbvlrsdtkfoh",
+      user: "orders@tru-scapes.com",
+      pass: "fsrvuyynrofrojew",
     },
   });
 

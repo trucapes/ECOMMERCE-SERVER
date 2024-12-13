@@ -24,13 +24,13 @@ router.post("/sendRequest", async (req, res) => {
     const Transport = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "drdwyn1@gmail.com",
-        pass: "rzelwbvlrsdtkfoh",
+        user: "orders@tru-scapes.com",
+        pass: "fsrvuyynrofrojew",
       },
     });
     //Create the mail options
     const mailOptions = {
-      from: "TruScapes drdwyn1@gmail.com",
+      from: "TruScapes orders@tru-scapes.com",
       to: user.email,
       subject: "Payment Request for Your Wallet Balance Payment.",
       html: template,

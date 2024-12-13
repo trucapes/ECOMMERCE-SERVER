@@ -118,8 +118,8 @@ const register = async (req, res) => {
     // const Transport = nodemailer.createTransport({
     //   service: "gmail",
     //   auth: {
-    //     user: "drdwyn1@gmail.com",
-    //     pass: "rzelwbvlrsdtkfoh",
+    //     user: "orders@tru-scapes.com",
+    //     pass: "fsrvuyynrofrojew",
     //   },
     // });
 
@@ -231,8 +231,8 @@ const sendNewPasswordEmail = async (req, res) => {
     const Transport = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "drdwyn1@gmail.com",
-        pass: "rzelwbvlrsdtkfoh",
+        user: "orders@tru-scapes.com",
+        pass: "fsrvuyynrofrojew",
       },
     });
 
@@ -307,8 +307,8 @@ const resetPassword = async (req, res) => {
     const Transport = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "drdwyn1@gmail.com",
-        pass: "rzelwbvlrsdtkfoh",
+        user: "orders@tru-scapes.com",
+        pass: "fsrvuyynrofrojew",
       },
     });
 

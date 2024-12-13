@@ -50,8 +50,8 @@ const updateOrderStatus = async (req, res) => {
         const Transport = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "drdwyn1@gmail.com",
-            pass: "rzelwbvlrsdtkfoh",
+            user: "orders@tru-scapes.com",
+            pass: "fsrvuyynrofrojew",
           },
         });
 
@@ -94,8 +94,8 @@ Thanks for choosing Tru-Scapes®!
         const Transport = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "drdwyn1@gmail.com",
-            pass: "rzelwbvlrsdtkfoh",
+            user: "orders@tru-scapes.com",
+            pass: "fsrvuyynrofrojew",
           },
         });
 

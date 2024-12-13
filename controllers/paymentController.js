@@ -256,8 +256,8 @@ const initializePayment = async (req, res) => {
         const Transport = nodemailer.createTransport({
           service: "gmail",
           auth: {
-            user: "drdwyn1@gmail.com",
-            pass: "rzelwbvlrsdtkfoh",
+            user: "orders@tru-scapes.com",
+            pass: "fsrvuyynrofrojew",
           },
         });
 
@@ -411,8 +411,8 @@ If you have questions, we’re always just an email away!</p>
               const Transport = nodemailer.createTransport({
                 service: "gmail",
                 auth: {
-                  user: "drdwyn1@gmail.com",
-                  pass: "rzelwbvlrsdtkfoh",
+                  user: "orders@tru-scapes.com",
+                  pass: "fsrvuyynrofrojew",
                 },
               });
 
@@ -579,8 +579,8 @@ const payCreditBalance = async (req, res) => {
           const Transport = nodemailer.createTransport({
             service: "gmail",
             auth: {
-              user: "drdwyn1@gmail.com",
-              pass: "rzelwbvlrsdtkfoh",
+              user: "orders@tru-scapes.com",
+              pass: "fsrvuyynrofrojew",
             },
           });
 
