@@ -251,8 +251,10 @@ const initializePayment = async (req, res) => {
         newOrder.products.push(order);
       });
 
+      await newOrder.save();
+
       try {
-        await newOrder.save();
+        
         const Transport = nodemailer.createTransport({
           service: "gmail",
           auth: {
