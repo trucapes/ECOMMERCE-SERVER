@@ -17,7 +17,7 @@ router.post("/sendRequest", async (req, res) => {
     }
     //Load the email template and replace the placeholders
     let template = fs.readFileSync("emailTemplate/emailTemplate.html", "utf-8");
-    console.log(typeof template);
+    // console.log(typeof template);
     template = template.replace(/userName/g, user.firstName);
     template = template.replace(/userCreditAmount/g, `$${user.credit.credit}`);
     //Create the mail service
@@ -32,7 +32,7 @@ router.post("/sendRequest", async (req, res) => {
     const mailOptions = {
       from: "TruScapes drdwyn1@gmail.com",
       to: user.email,
-      subject: "Kindly pay your due credit amount",
+      subject: "Payment Request for Your Wallet Balance Payment.",
       html: template,
     };
     //Send the mail

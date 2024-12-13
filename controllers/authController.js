@@ -6,6 +6,8 @@ const Wallet = require("../models/walletModel");
 const creditModel = require("../models/creditModel");
 const nodemailer = require("nodemailer");
 const emailModel = require("../models/emailModel");
+const sendEmail = require("../helperFunctions/sendEmail");
+const fs = require("fs");
 
 const JWT_SECRET = "ashdliashkldjnaslkcjlNcilHcoqla8weduoqwscbkjzbxkjbzdhw3hdi";
 
@@ -69,46 +71,90 @@ const register = async (req, res) => {
     await newUser.save();
     await wallet.save();
 
-    const Transport = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "drdwyn1@gmail.com",
-        pass: "rzelwbvlrsdtkfoh",
-      },
+    let htmlUserEmail = fs.readFileSync(
+      "emailTemplate/registerUser.html",
+      "utf-8"
+    );
+
+    htmlUserEmail = htmlUserEmail.replace(
+      "{CustomerName}",
+      `${newUser.firstName} ${newUser.lastName}`
+    );
+
+    await sendEmail({
+      to: newUser.email,
+      bcc: "",
+      subject: "Your Tru-Scapes® Account Has Been Created—Just One More Step!",
+      html: htmlUserEmail,
+      text: "",
     });
 
-    const mailOptions = {
-      from: `New Registration - Tru-Scapes <${admin.email}>`,
-      to: newUser.email,
+    let htmlAdminEmail = fs.readFileSync(
+      "emailTemplate/registerAdminTemplate.html",
+      "utf-8"
+    );
+
+    htmlAdminEmail = htmlAdminEmail.replace(
+      "{CustomerName}",
+      `${newUser.firstName} ${newUser.lastName}`
+    );
+    htmlAdminEmail = htmlAdminEmail.replace(
+      "{CustomerEmail}",
+      `${newUser.email}`
+    );
+    htmlAdminEmail = htmlAdminEmail.replace(
+      "{Date}",
+      `${new Date().toDateString()}`
+    );
+
+    await sendEmail({
+      // to: admin.email,
       bcc: bcc,
-      subject: "New Registration - Tru-Scapes",
-      html: `
-      <p>Hi ${newUser.firstName},</p>
-      <p>New Account Created with the following details:</p>
-      <ul>
-        <li>First Name: ${newUser.firstName}</li>
-        <li>Last Name: ${newUser.lastName}</li>
-        <li>Email: ${newUser.email}</li>
-        <li>Mobile Number: ${newUser.mobileNo}</li>
-        <li>Country: ${newUser.country}</li>
-        <li>City: ${newUser.city}</li>
-        <li>Company: ${newUser.company}</li>
-        <li>Company Website: ${newUser.companyWebsite}</li>
-        <li>User Role: ${newUser.userRole}</li>
-      </ul>
-      <p><strong>Admin approval is pending for the account to be activated.<strong></p>
-      <p>Thank you!</p>
-      `,
-    };
-    Transport.sendMail(mailOptions, (err, inf) => {
-      if (inf) {
-        console.log("\nWe Sent The email");
-        return res.status(201).json({ error: false, message: "Email sent" });
-      } else {
-        console.log("\n", err);
-        return res.status(200).json({ error: true, message: err.message });
-      }
+      subject: `New Account Pending Approval: ${newUser.firstName} ${newUser.lastName}`,
+      html: htmlAdminEmail,
+      text: "",
     });
+
+    // const Transport = nodemailer.createTransport({
+    //   service: "gmail",
+    //   auth: {
+    //     user: "drdwyn1@gmail.com",
+    //     pass: "rzelwbvlrsdtkfoh",
+    //   },
+    // });
+
+    // const mailOptions = {
+    //   from: `New Registration - Tru-Scapes <${admin.email}>`,
+    //   to: newUser.email,
+    //   bcc: bcc,
+    //   subject: "New Registration - Tru-Scapes",
+    //   html: `
+    //   <p>Hi ${newUser.firstName},</p>
+    //   <p>New Account Created with the following details:</p>
+    //   <ul>
+    //     <li>First Name: ${newUser.firstName}</li>
+    //     <li>Last Name: ${newUser.lastName}</li>
+    //     <li>Email: ${newUser.email}</li>
+    //     <li>Mobile Number: ${newUser.mobileNo}</li>
+    //     <li>Country: ${newUser.country}</li>
+    //     <li>City: ${newUser.city}</li>
+    //     <li>Company: ${newUser.company}</li>
+    //     <li>Company Website: ${newUser.companyWebsite}</li>
+    //     <li>User Role: ${newUser.userRole}</li>
+    //   </ul>
+    //   <p><strong>Admin approval is pending for the account to be activated.<strong></p>
+    //   <p>Thank you!</p>
+    //   `,
+    // };
+    // Transport.sendMail(mailOptions, (err, inf) => {
+    //   if (inf) {
+    //     console.log("\nWe Sent The email");
+    //     return res.status(201).json({ error: false, message: "Email sent" });
+    //   } else {
+    //     console.log("\n", err);
+    //     return res.status(200).json({ error: true, message: err.message });
+    //   }
+    // });
 
     res
       .status(201)
@@ -191,12 +237,18 @@ const sendNewPasswordEmail = async (req, res) => {
     });
 
     const mailOptions = {
-      from: "TruScapes drdwyn1@gmail.com",
+      from: "TruScapes",
       to: email,
-      subject: "New Password",
-      html: `<p>Hello ${user.firstName},</p>
-      <p>Your new password is: ${newPassword}</p>
-      <p>Thank you</p>`,
+      subject: "Your New Tru-Scapes® Password",
+      html: `
+      <p><strong>Hello ${user.firstName},</strong></p>
+      <p>
+      We’ve generated a new password for your account as requested.<br/>
+      <strong>Your Temporary Password: ${newPassword}</strong><br/>
+      Please log in using the new password and update it to something memorable right away.<br/>
+      If you didn’t request this change, please reach out to us immediately.
+      <p>Thank you, <br/>
+      The Tru-Scapes® Team</p>`,
     };
     Transport.sendMail(mailOptions, (err, inf) => {
       if (inf) {

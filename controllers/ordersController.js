@@ -58,22 +58,16 @@ const updateOrderStatus = async (req, res) => {
         const mailOptions = {
           from: "TruScapes <no-reply@truscapes.com>",
           to,
-          subject: "Order Delivered",
-          text: "Your order has been delivered",
+          subject: "Your Tru-Scapes® Order " + order._id + " Is Complete",
+          text: "Your Tru-Scapes® Order " + order._id + " Is Complete",
           html: `
-            <h1>Order Delivered</h1>
-            <p>Dear ${user.firstName},</p>
-            <p>Your order has been delivered. Thank you for your purchase!</p>
-            <p>Order Details:</p>
-            <ul>
-              ${order.products
-                .map(
-                  (product) =>
-                    `<li>${product.name} - Quantity: ${product.quantity}</li>`
-                )
-                .join("")}
-            </ul>
-            <p>Thank you for your support!</p>
+            <p>Hello ${user.firstName},</p>
+            <p>Happy day! Your order ${order._id} has been successfully delivered. <br/>
+We hope everything meets (or even exceeds) your expectations. If you love what you received, consider leaving a review to help other customers make informed decisions.</p>
+            
+            <p>Need help or have questions? Just hit reply, and we’ll be there for you.<br/>
+Thanks for choosing Tru-Scapes®!
+</p>
             <p>Best regards,</p>
             <p>The TruScapes Team</p>
           `,
@@ -108,23 +102,14 @@ const updateOrderStatus = async (req, res) => {
         const mailOptions = {
           from: "TruScapes <no-reply@truscapes.com>",
           to,
-          subject: "Order Updated",
+          subject: "Update on Your Tru-Scapes® Order",
           text: "Your order has been updated",
           html: `
-            <h1>Order Updated</h1>
-            <p>Dear ${user.firstName},</p>
-            <p>Your order has been updated to <strong>${status}</strong>. Thank you for your purchase!</p>
-            <p>Order Details:</p>
-
-            <ul>
-              ${order.products
-                .map(
-                  (product) =>
-                    `<li>${product.name} - Quantity: ${product.quantity}</li>`
-                )
-                .join("")}
-            </ul>
-            <p>Thank you for your support!</p>
+            
+            <p>Hello ${user.firstName},</p>
+            <p>We’ve got some news about your order  ${order._id}:</p>
+            <p>Current Status: ${order.status}</p>
+            <p>We’re working to ensure everything goes smoothly. If you have any questions or need more info, just reply to this email, and we’ll be happy to help.</p>
             <p>Best regards,</p>
             <p>The TruScapes Team</p>
           `,

@@ -1,6 +1,8 @@
 // userController.js
 
 const User = require("../../models/userModel");
+const sendEmail = require("../../helperFunctions/sendEmail");
+const emailModel = require("../../models/emailModel");
 
 const UserController = {
   // Get all users with pagination, filtering, and sorting
@@ -122,6 +124,33 @@ const UserController = {
       if (!user) {
         return res.status(404).json({ error: true, message: "User not found" });
       }
+
+      const to = user.email;
+      const emails = await emailModel.find();
+      const bcc = emails.map((email) => email.email).join(",");
+
+      sendEmail({
+        to: to,
+        subject: "Good News! Your Tru-Scapes® Account Is Now Approved",
+        text: "Good News! Your Tru-Scapes® Account Is Now Approved",
+        html: `
+            <p><strong>Hello ${user.firstName} ${user.lastName},</strong></p>
+            <p>We’re happy to let you know that your Tru-Scapes® account has been <strong>approved!</strong> You can now log in and start enjoying all the features our platform has to offer.</p>
+            <p>
+              <strong>Next Steps:</strong>
+              <ul>
+                <li>Log in: Access your account by logging in to <a href="https://shop.tru-scapes.com">https://shop.tru-scapes.com</a></li>
+                <li>Explore & Enjoy: Browse our services, request quotes, place  orders, and get the most out of Tru-Scapes®!</li>
+              </ul>
+            </p>
+            <p>If you have any questions or need assistance, reply to this email and we’ll gladly help.</p>
+            <br/>
+            <br/>
+            <strong>Thank you,</strong>
+            <br/>
+            <strong>The Tru-Scapes® Team</strong>
+          `,
+      });
 
       if (makeAdmin === true) {
         user = await User.findByIdAndUpdate(

@@ -37,10 +37,10 @@ async function processTransaction(req, res) {
   });
 
   const mailOptions = {
-    from: "TruScapes <no-reply@truscapes.com>",
+    from: "Tru-Scapes",
     to: user.email,
     bcc: bcc,
-    subject: "New Wallet Transaction",
+    subject: "Your Tru-Scapes® Wallet Has Been Updated",
     html: `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -50,16 +50,27 @@ async function processTransaction(req, res) {
         <title>Document</title>
       </head>
       <body>
-        <h1>New Wallet Transaction</h1>
-        <p>Dear ${user.name},</p>
+        <p><strong>Dear ${user.firstName},</strong></p>
+        ${
+          amount > 0
+            ? "Great news! Your Tru-Scapes® wallet was just Credited with the amount of $" +
+              amount +
+              "!"
+            : "Your Tru-Scapes® wallet was just Debited with the amount of $" +
+              amount +
+              "!"
+        }
         <p>
-          We're writing to inform you that a credit transaction of amount $${amount} has been
-          detected. We kindly request your prompt attention in settling this
-          amount at your earliest convenience.
+          <strong>Transaction Details:</strong>
+          <ul>
+            <li>Transaction Type: ${amount > 0 ? "Credit" : "Debit"}</li>
+            <li>Amount: ${amount}</li>
+          </ul>
         </p>
-        <p>Thank you for your understanding and cooperation.</p>
-        <p>Best regards,</p>
-        <p>TruScapes</p>
+        <p>You can review your full transaction history and wallet balance anytime from your Dashboard. <br/>
+        If anything looks inccorect or you have questions, we’re always here to help.</p>
+        <p>Cheers,</p>
+        <p>The Tru-Scapes® Team</p>
       </body>
     </html>`,
   };

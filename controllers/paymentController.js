@@ -262,13 +262,16 @@ const initializePayment = async (req, res) => {
         });
 
         const mailOptions = {
-          from: `New Order - Tru-Scapes <${admin.email}>`,
+          from: `Tru-Scapes <${admin.email}>`,
           to: to,
-          bcc: bcc,
-          subject: "New Order Placed - Tru-Scapes",
+          subject:
+            "Your New Tru-Scapes® Order " + newOrder._id + " Is Confirmed",
           html: `
-      <p>Hi ${user.firstName},</p>
-      <p>A new order have been placed on Tru-Scapes:</p>
+      <p>Hello ${user.firstName},</p>
+      <p>Thanks for choosing Tru-Scapes®! We’re excited to let you know that your order ${
+        newOrder._id
+      } is confirmed and is now being processed.</p>
+      <p>Order Details:</p>
       <ul>
         ${orders
           .map(
@@ -277,15 +280,45 @@ const initializePayment = async (req, res) => {
           )
           .join("")}
       </ul>
-      <p>Order ID: ${newOrder._id}</p>
-      <p>Shipping Address:</p>
-      <p>${addressLine1}</p>
-      <p>${addressLine2}</p>
-      <p>${city}, ${pincode}</p>
-      <p>Order Total: $${amount}</p>
-      <p>Thank you!</p>
+      <p>You can view and manage your order anytime in your Order History. <br/>
+If you have questions, we’re always just an email away!</p>
+      <p>Thank you, <br/>The Tru-Scapes® Team</p>
       `,
         };
+
+        const mailOptionAdmin = {
+          from: `Tru-Scapes <${admin.email}>`,
+          bcc: bcc,
+          subject: "New Order Alert: " + newOrder._id + " by " + user.firstName,
+          html: `
+      <p>Hello Admin,</p>
+      <p>A new order has just rolled in!</p>
+      <p>Order Details:</p>
+      <ul>
+        ${orders
+          .map(
+            (order) =>
+              `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
+          )
+          .join("")}
+
+        <li>Order ID: ${newOrder._id}</li>
+        <li>Customer Name: ${user.firstName}</li>
+        <li>Customer Email: ${user.email}</li>
+        <li>Date: ${new Date()}</li>
+      </ul>
+      <p>Please review and ensure everything is in motion to deliver a top-notch experience.</p>
+      <p>Thank you, <br/>The Tru-Scapes® Team</p>
+      `,
+        };
+
+        Transport.sendMail(mailOptionAdmin, (err, inf) => {
+          if (inf) {
+            console.log("\nWe Sent The email");
+          } else {
+            console.log("\n", err);
+          }
+        });
         Transport.sendMail(mailOptions, (err, inf) => {
           if (inf) {
             console.log("\nWe Sent The email");
@@ -384,30 +417,66 @@ const initializePayment = async (req, res) => {
               });
 
               const mailOptions = {
-                from: `New Order - Tru-Scapes <${admin.email}>`,
+                from: `Tru-Scapes <${admin.email}>`,
                 to: to,
-                bcc: bcc,
-                subject: "New Order Placed - Tru-Scapes",
+                subject:
+                  "Your New Tru-Scapes® Order " +
+                  newOrder._id +
+                  " Is Confirmed",
                 html: `
-                  <p>Hi ${user.firstName},</p>
-                  <p>A new order have been placed on Tru-Scapes:</p>
-                  <ul>
-                    ${orders
-                      .map(
-                        (order) =>
-                          `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
-                      )
-                      .join("")}
-                  </ul>
-                  <p>Order ID: ${newOrder._id}</p>
-                  <p>Shipping Address:</p>
-                  <p>${addressLine1}</p>
-                  <p>${addressLine2}</p>
-                  <p>${city}, ${pincode}</p>
-                  <p>Order Total: $${amount}</p>
-                  <p>Thank you!</p>
-                  `,
+      <p>Hello ${user.firstName},</p>
+      <p>Thanks for choosing Tru-Scapes®! We’re excited to let you know that your order ${
+        newOrder._id
+      } is confirmed and is now being processed.</p>
+      <p>Order Details:</p>
+      <ul>
+        ${orders
+          .map(
+            (order) =>
+              `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
+          )
+          .join("")}
+      </ul>
+      <p>You can view and manage your order anytime in your Order History. <br/>
+If you have questions, we’re always just an email away!</p>
+      <p>Thank you, <br/>The Tru-Scapes® Team</p>
+      `,
               };
+
+              const mailOptionAdmin = {
+                from: `Tru-Scapes <${admin.email}>`,
+                bcc: bcc,
+                subject:
+                  "New Order Alert: " + newOrder._id + " by " + user.firstName,
+                html: `
+      <p>Hello Admin,</p>
+      <p>A new order has just rolled in!</p>
+      <p>Order Details:</p>
+      <ul>
+        ${orders
+          .map(
+            (order) =>
+              `<li>${order.quantity} x ${order.name}  - $${order.price}</li>`
+          )
+          .join("")}
+
+        <li>Order ID: ${newOrder._id}</li>
+        <li>Customer Name: ${user.firstName}</li>
+        <li>Customer Email: ${user.email}</li>
+        <li>Date: ${new Date()}</li>
+      </ul>
+      <p>Please review and ensure everything is in motion to deliver a top-notch experience.</p>
+      <p>Thank you, <br/>The Tru-Scapes® Team</p>
+      `,
+              };
+
+              Transport.sendMail(mailOptionAdmin, (err, inf) => {
+                if (inf) {
+                  console.log("\nWe Sent The email");
+                } else {
+                  console.log("\n", err);
+                }
+              });
               Transport.sendMail(mailOptions, (err, inf) => {
                 if (inf) {
                   console.log("\nWe Sent The email");
