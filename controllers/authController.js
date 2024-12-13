@@ -99,6 +99,10 @@ const register = async (req, res) => {
       `${newUser.firstName} ${newUser.lastName}`
     );
     htmlAdminEmail = htmlAdminEmail.replace(
+      "{CustomerName}",
+      `${newUser.firstName} ${newUser.lastName}`
+    );
+    htmlAdminEmail = htmlAdminEmail.replace(
       "{CustomerEmail}",
       `${newUser.email}`
     );
