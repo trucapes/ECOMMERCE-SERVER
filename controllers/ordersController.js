@@ -108,7 +108,7 @@ Thanks for choosing Tru-Scapes®!
             
             <p>Hello ${user.firstName},</p>
             <p>We’ve got some news about your order  ${order._id}:</p>
-            <p>Current Status: ${order.status}</p>
+            <p>Current Status: ${status}</p>
             <p>We’re working to ensure everything goes smoothly. If you have any questions or need more info, just reply to this email, and we’ll be happy to help.</p>
             <p>Best regards,</p>
             <p>The TruScapes Team</p>
