@@ -20,10 +20,6 @@ const orderSchema = new mongoose.Schema(
           type: String,
           required: true,
         },
-        category: {
-          type: String,
-          required: true,
-        },
         imagePath: {
           type: String,
           required: true,
