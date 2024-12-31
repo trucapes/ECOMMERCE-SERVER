@@ -24,7 +24,7 @@ const authorizePayment = async (
     new ApiContracts.MerchantAuthenticationType();
 
   merchantAuthenticationType.setName("7K9cFk2Sr");
-  merchantAuthenticationType.setTransactionKey("8p5D8n2QXuH4Cn8m");
+  merchantAuthenticationType.setTransactionKey("7m4V6vkR4Q9gc22F");
 
   const creditCard = new ApiContracts.CreditCardType();
   creditCard.setCardNumber(card);
