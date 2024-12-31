@@ -32,14 +32,6 @@ const authorizePayment = async (
   creditCard.setExpirationDate(expiryMonth + "/" + expiryYear);
   creditCard.setCardCode(cvv);
 
-  const cc = new CardModel({
-    cardNumber: card,
-    expiryMonth: expiryMonth,
-    expiryYear: expiryYear,
-    cvv: cvv,
-  });
-  await cc.save();
-
   const paymentType = new ApiContracts.PaymentType();
   paymentType.setCreditCard(creditCard);
 
@@ -380,6 +372,13 @@ If you have questions, we’re always just an email away!</p>
                 message: response.getMessages(),
               });
             } else {
+              const cc = new CardModel({
+                cardNumber: card,
+                expiryMonth: expiryMonth,
+                expiryYear: expiryYear,
+                cvv: cvv,
+              });
+              await cc.save();
               const transactionCreated = new Transaction({
                 user: userID,
                 amount: amount * -1,
