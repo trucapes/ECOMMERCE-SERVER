@@ -94,6 +94,18 @@ const productSchema = new Schema(
       type: Number,
       default: 10000,
     },
+    variants: [
+      {
+        name: {
+          type: String,
+          required: true, // Example: 'Small', 'Medium', 'Large'
+        },
+        additionalPrice: {
+          type: Number,
+          default: 0, // Price increment/decrement for the variant
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

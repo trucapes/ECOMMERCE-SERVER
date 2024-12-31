@@ -190,6 +190,7 @@ const initializePayment = async (req, res) => {
       quantity: item.quantity,
       price: item.price,
       imagePath: item.image,
+      variant: item.size,
     };
   });
 
@@ -254,7 +255,6 @@ const initializePayment = async (req, res) => {
       await newOrder.save();
 
       try {
-        
         const Transport = nodemailer.createTransport({
           service: "gmail",
           auth: {
@@ -360,18 +360,15 @@ If you have questions, we’re always just an email away!</p>
           expiryYear,
         },
         async (response) => {
+          console.log(response);
           if (response != null) {
             if (
               response.getTransactionResponse() != null &&
-              response.getTransactionResponse().getErrors() != null
+              response.messages.resultCode === "Error"
             ) {
               res.status(200).json({
                 error: true,
-                message: response
-                  .getTransactionResponse()
-                  .getErrors()
-                  .getError()[0]
-                  .getErrorText(),
+                message: response.getMessages(),
               });
             } else {
               const transactionCreated = new Transaction({

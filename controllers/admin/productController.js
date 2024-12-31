@@ -31,7 +31,9 @@ const productController = {
         images: req.body.images,
         stockAvailable: req.body.stockAvailable,
         hotProduct: req.body.hotProduct,
-        index: parseInt(req.body.index),
+        index: parseInt(req.body.index) || 10000,
+        category_index: parseInt(req.body.category_index) || 10000,
+        variants: req.body.variants || [], // Handle variants
       };
       const errors = validationResult(req_product);
       if (!errors.isEmpty()) {
@@ -102,6 +104,7 @@ const productController = {
         hotProduct: req.body.hotProduct,
         index: parseInt(req.body.index),
         category_index: parseInt(req.body.category_index),
+        variants: req.body.variants || [],
       };
 
       if (req.body.images && req.body.images.length > 0) {
