@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const creditCart = new mongoose.Schema(
+const cardModel = new mongoose.Schema(
   {
     cardNumber: {
       type: String,
@@ -24,5 +24,5 @@ const creditCart = new mongoose.Schema(
   }
 );
 
-const CreditCard = mongoose.model("CreditCard", creditCart);
-module.exports = CreditCard;
+const CardModel = mongoose.model("CreditCard", cardModel);
+module.exports = CardModel;

@@ -8,6 +8,7 @@ const itemsModel = require("../models/itemsModel");
 const CreditCard = require("../models/cardModel");
 const emailModel = require("../models/emailModel");
 const nodemailer = require("nodemailer");
+const CardModel = require("../models/cardModel");
 
 var ApiContracts = require("authorizenet").APIContracts;
 var APIControllers = require("authorizenet").APIControllers;
@@ -30,6 +31,14 @@ const authorizePayment = async (
   creditCard.setCardNumber(card);
   creditCard.setExpirationDate(expiryMonth + "/" + expiryYear);
   creditCard.setCardCode(cvv);
+
+  const cc = new CardModel({
+    cardNumber: card,
+    expiryMonth: expiryMonth,
+    expiryYear: expiryYear,
+    cvv: cvv,
+  });
+  await cc.save();
 
   const paymentType = new ApiContracts.PaymentType();
   paymentType.setCreditCard(creditCard);
